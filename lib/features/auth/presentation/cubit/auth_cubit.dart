@@ -137,8 +137,27 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> signOut() async {
-    await _signOut();
+    if (isClosed) return;
+    emit(state.copyWith(status: AuthStatus.authLoading, clearMessage: true));
+
+    try {
+      await _signOut();
+      if (isClosed) return;
+      emit(const AuthState(status: AuthStatus.unauthenticated));
+    } on FirebaseAuthException catch (e) {
+      if (isClosed) return;
+      emit(
+        state.copyWith(
+          status: AuthStatus.failure,
+          message: e.message ?? e.code,
+        ),
+      );
+    } catch (e) {
+      if (isClosed) return;
+      emit(state.copyWith(status: AuthStatus.failure, message: e.toString()));
+    }
   }
+
 
   @override
   Future<void> close() async {

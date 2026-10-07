@@ -39,7 +39,7 @@ Future<void> setupDependencies() async {
 
   await googleSignIn.initialize(
     serverClientId:
-    '223428772506-vt1kdpngcsh68g2t1jpn0jqq1j5ti0f.apps.googleusercontent.com',
+    '223428772506-vit1kdpngcsh68g2t1jpn0jqq1j5ti0f.apps.googleusercontent.com',
   );
 
   getIt.registerLazySingleton<FirebaseFirestore>(

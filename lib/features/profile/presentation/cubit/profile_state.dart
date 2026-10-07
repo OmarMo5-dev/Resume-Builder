@@ -1,1 +1,30 @@
-import 'package:equatable/equatable.dart';import '../../domain/entities/user_profile.dart';enum ProfileStatus{initial,loading,success,saving,failure}class ProfileState extends Equatable{final ProfileStatus status;final UserProfile? profile;final String? error;const ProfileState({this.status=ProfileStatus.initial,this.profile,this.error});ProfileState copyWith({ProfileStatus? status,UserProfile? profile,String? error,bool clearError=false})=>ProfileState(status:status??this.status,profile:profile??this.profile,error:clearError?null:error??this.error);@override List<Object?> get props=>[status,profile,error];}
+import 'package:equatable/equatable.dart';
+import '../../domain/entities/user_profile.dart';
+
+enum ProfileStatus { initial, loading, success, saving, failure }
+
+class ProfileState extends Equatable {
+  final ProfileStatus status;
+  final UserProfile? profile;
+  final String? error;
+
+  const ProfileState({
+    this.status = ProfileStatus.initial,
+    this.profile,
+    this.error,
+  });
+
+  ProfileState copyWith({
+    ProfileStatus? status,
+    UserProfile? profile,
+    String? error,
+    bool clearError = false,
+  }) => ProfileState(
+    status: status ?? this.status,
+    profile: profile ?? this.profile,
+    error: clearError ? null : error ?? this.error,
+  );
+
+  @override
+  List<Object?> get props => [status, profile, error];
+}

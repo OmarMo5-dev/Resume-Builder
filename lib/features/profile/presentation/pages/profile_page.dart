@@ -1,5 +1,7 @@
+import 'package:business_os/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../app/di/injection_container.dart';
 import '../cubit/profile_cubit.dart';
 import '../cubit/profile_state.dart';
@@ -32,9 +34,84 @@ class _S extends State<_View> {
     super.dispose();
   }
 
+  // ============================================================
+  //  Sign Out Flow
+  // ============================================================
+  Future<void> _confirmSignOut(BuildContext pageContext) async {
+    final confirmed = await showDialog<bool>(
+      context: pageContext,
+      builder: (dialogContext) {
+        final cs = Theme.of(dialogContext).colorScheme;
+        return AlertDialog(
+          icon: Icon(Icons.logout_rounded, color: cs.error, size: 28),
+          title: const Text('Sign Out'),
+          content: const Text(
+            'Are you sure you want to sign out of your account?',
+          ),
+          actionsAlignment: MainAxisAlignment.spaceBetween,
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton.icon(
+              style: FilledButton.styleFrom(
+                backgroundColor: cs.error,
+                foregroundColor: cs.onError,
+              ),
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              icon: const Icon(Icons.logout_rounded, size: 18),
+              label: const Text('Sign Out'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true) return;
+    if (!pageContext.mounted) return;
+
+    // Capture messenger + router BEFORE the async gap
+    final messenger = ScaffoldMessenger.of(pageContext);
+    final router = GoRouter.of(pageContext);
+    final authCubit = pageContext.read<AuthCubit>();
+
+    await authCubit.signOut();
+
+    if (!pageContext.mounted) return;
+
+    // Show success snackbar
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        const SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Text('Signed out successfully'),
+        ),
+      );
+
+    // Navigate to login & clear the stack
+    router.go('/auth/login');
+  }
+
+  // ============================================================
+  //  Save Profile
+  // ============================================================
+  void _saveProfile(BuildContext context, ProfileState s) {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    context.read<ProfileCubit>().save(
+      displayName: _nameController.text.trim(),
+    );
+  }
+
+  // ============================================================
+  //  BUILD
+  // ============================================================
   @override
   Widget build(BuildContext c) {
     final theme = Theme.of(c);
+    final cs = theme.colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
@@ -58,14 +135,6 @@ class _S extends State<_View> {
             _nameController.text = s.profile!.displayName;
             _nameInitialized = true;
           }
-          if (s.status == ProfileStatus.saving) {
-            ScaffoldMessenger.of(c).showSnackBar(
-              const SnackBar(
-                behavior: SnackBarBehavior.floating,
-                content: Text('Profile saved'),
-              ),
-            );
-          }
         },
         builder: (c, s) {
           if (s.status == ProfileStatus.loading || s.profile == null) {
@@ -75,13 +144,14 @@ class _S extends State<_View> {
           final initial = profile.displayName.trim().isEmpty
               ? '?'
               : profile.displayName.trim()[0].toUpperCase();
+          final isSaving = s.status == ProfileStatus.saving;
 
           return Form(
             key: _formKey,
             child: ListView(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
               children: [
-                // Avatar
+                // ---------- Avatar ----------
                 Center(
                   child: Column(
                     children: [
@@ -94,13 +164,13 @@ class _S extends State<_View> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              theme.colorScheme.primary,
-                              theme.colorScheme.primary.withOpacity(0.6),
+                              cs.primary,
+                              cs.primary.withOpacity(0.6),
                             ],
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: theme.colorScheme.primary.withOpacity(0.25),
+                              color: cs.primary.withOpacity(0.25),
                               blurRadius: 20,
                               offset: const Offset(0, 8),
                             ),
@@ -110,7 +180,7 @@ class _S extends State<_View> {
                         child: Text(
                           initial,
                           style: theme.textTheme.displaySmall?.copyWith(
-                            color: theme.colorScheme.onPrimary,
+                            color: cs.onPrimary,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -128,7 +198,7 @@ class _S extends State<_View> {
                       Text(
                         profile.email,
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
+                          color: cs.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -136,29 +206,27 @@ class _S extends State<_View> {
                 ),
                 const SizedBox(height: 32),
 
-                // Section title
+                // ---------- Section: ACCOUNT ----------
                 Padding(
                   padding: const EdgeInsets.only(left: 4, bottom: 8),
                   child: Text(
                     'ACCOUNT',
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
+                      color: cs.onSurfaceVariant,
                       letterSpacing: 1.4,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
 
-                // Form card
+                // ---------- Form Card ----------
                 Card(
                   elevation: 0,
-                  color: theme.colorScheme.surfaceContainerHighest
-                      .withOpacity(0.35),
+                  color: cs.surfaceContainerHighest.withOpacity(0.35),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                     side: BorderSide(
-                      color: theme.colorScheme.outlineVariant
-                          .withOpacity(0.4),
+                      color: cs.outlineVariant.withOpacity(0.4),
                     ),
                   ),
                   child: Padding(
@@ -199,20 +267,12 @@ class _S extends State<_View> {
                 ),
                 const SizedBox(height: 24),
 
-                // Save button
+                // ---------- Save Button ----------
                 SizedBox(
                   height: 52,
                   child: FilledButton.icon(
-                    onPressed: s.status == ProfileStatus.saving
-                        ? null
-                        : () {
-                      if (_formKey.currentState?.validate() ?? false) {
-                        c.read<ProfileCubit>().save(
-                          displayName: _nameController.text.trim(),
-                        );
-                      }
-                    },
-                    icon: s.status == ProfileStatus.saving
+                    onPressed: isSaving ? null : () => _saveProfile(c, s),
+                    icon: isSaving
                         ? const SizedBox(
                       width: 18,
                       height: 18,
@@ -223,14 +283,58 @@ class _S extends State<_View> {
                     )
                         : const Icon(Icons.check_rounded),
                     label: Text(
-                      s.status == ProfileStatus.saving
-                          ? 'Saving…'
-                          : 'Save Changes',
+                      isSaving ? 'Saving…' : 'Save Changes',
                       style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 15,
                       ),
                     ),
+                  ),
+                ),
+
+                // ---------- DANGER ZONE ----------
+                const SizedBox(height: 40),
+                Padding(
+                  padding: const EdgeInsets.only(left: 4, bottom: 8),
+                  child: Text(
+                    'DANGER ZONE',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: cs.error,
+                      letterSpacing: 1.4,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                Card(
+                  elevation: 0,
+                  color: cs.errorContainer.withOpacity(0.25),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                    side: BorderSide(
+                      color: cs.error.withOpacity(0.35),
+                    ),
+                  ),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 6,
+                    ),
+                    leading: Icon(Icons.logout_rounded, color: cs.error),
+                    title: Text(
+                      'Sign Out',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: cs.error,
+                      ),
+                    ),
+                    subtitle: Text(
+                      'You will be returned to the login screen',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: cs.onSurfaceVariant,
+                      ),
+                    ),
+                    trailing: Icon(Icons.chevron_right_rounded, color: cs.error),
+                    onTap: () => _confirmSignOut(c),
                   ),
                 ),
               ],
