@@ -1,0 +1,1 @@
+import '../entities/resume.dart'; import '../repositories/resume_repository.dart'; class UpdateResume{final ResumeRepository repository;UpdateResume(this.repository);Future<Resume> call({required Resume resume})=>repository.updateResume(resume:resume);}

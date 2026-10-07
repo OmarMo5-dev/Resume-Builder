@@ -1,0 +1,1 @@
+import '../entities/resume.dart'; import '../repositories/resume_repository.dart'; class GetResumes{final ResumeRepository repository;GetResumes(this.repository);Future<List<Resume>> call()=>repository.getResumes();}

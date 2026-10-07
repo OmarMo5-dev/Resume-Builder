@@ -1,0 +1,24 @@
+{
+  "@@locale": "en",
+
+  "appName": "Business App",
+  "welcome": "Welcome",
+  "dashboard": "Dashboard",
+  "customers": "Customers",
+  "products": "Products",
+  "services": "Services",
+  "orders": "Orders",
+  "payments": "Payments",
+  "expenses": "Expenses",
+  "inventory": "Inventory",
+  "analytics": "Analytics",
+  "reports": "Reports",
+  "notifications": "Notifications",
+  "settings": "Settings",
+  "search": "Search",
+  "add": "Add",
+  "edit": "Edit",
+  "delete": "Delete",
+  "save": "Save",
+  "cancel": "Cancel"
+}

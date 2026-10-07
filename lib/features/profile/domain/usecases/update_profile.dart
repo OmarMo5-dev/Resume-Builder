@@ -1,0 +1,1 @@
+import '../entities/user_profile.dart';import '../repositories/profile_repository.dart';class UpdateProfile{final ProfileRepository repository;UpdateProfile(this.repository);Future<UserProfile> call({required UserProfile profile})=>repository.updateProfile(profile:profile.copyWith(updatedAt:DateTime.now()));}

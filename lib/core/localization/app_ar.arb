@@ -1,0 +1,24 @@
+{
+  "@@locale": "ar",
+
+  "appName": "تطبيق الأعمال",
+  "welcome": "مرحبًا",
+  "dashboard": "لوحة التحكم",
+  "customers": "العملاء",
+  "products": "المنتجات",
+  "services": "الخدمات",
+  "orders": "الطلبات",
+  "payments": "المدفوعات",
+  "expenses": "المصروفات",
+  "inventory": "المخزون",
+  "analytics": "التحليلات",
+  "reports": "التقارير",
+  "notifications": "الإشعارات",
+  "settings": "الإعدادات",
+  "search": "بحث",
+  "add": "إضافة",
+  "edit": "تعديل",
+  "delete": "حذف",
+  "save": "حفظ",
+  "cancel": "إلغاء"
+}

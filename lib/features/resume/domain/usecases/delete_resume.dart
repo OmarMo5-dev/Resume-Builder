@@ -1,0 +1,1 @@
+import '../repositories/resume_repository.dart'; class DeleteResume{final ResumeRepository repository;DeleteResume(this.repository);Future<void> call({required String resumeId})=>repository.deleteResume(resumeId:resumeId);}
