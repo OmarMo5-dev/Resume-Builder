@@ -12,15 +12,19 @@ class ProfileCubit extends Cubit<ProfileState> {
     : super(const ProfileState());
 
   Future<void> load() async {
+    if (isClosed) return;
     emit(state.copyWith(status: ProfileStatus.loading));
     try {
+      final profile = await getProfile();
+      if (isClosed) return;
       emit(
         state.copyWith(
           status: ProfileStatus.success,
-          profile: await getProfile(),
+          profile: profile,
         ),
       );
     } catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(status: ProfileStatus.failure, error: e.toString()));
     }
   }

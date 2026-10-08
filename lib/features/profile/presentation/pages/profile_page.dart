@@ -165,12 +165,12 @@ class _S extends State<_View> {
                             end: Alignment.bottomRight,
                             colors: [
                               cs.primary,
-                              cs.primary.withOpacity(0.6),
+                              cs.primary.withValues( alpha : 0.6),
                             ],
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: cs.primary.withOpacity(0.25),
+                              color: cs.primary.withValues( alpha : 0.25),
                               blurRadius: 20,
                               offset: const Offset(0, 8),
                             ),
@@ -222,11 +222,11 @@ class _S extends State<_View> {
                 // ---------- Form Card ----------
                 Card(
                   elevation: 0,
-                  color: cs.surfaceContainerHighest.withOpacity(0.35),
+                  color: cs.surfaceContainerHighest.withValues( alpha : 0.35),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                     side: BorderSide(
-                      color: cs.outlineVariant.withOpacity(0.4),
+                      color: cs.outlineVariant.withValues( alpha : 0.4),
                     ),
                   ),
                   child: Padding(
@@ -307,11 +307,11 @@ class _S extends State<_View> {
                 ),
                 Card(
                   elevation: 0,
-                  color: cs.errorContainer.withOpacity(0.25),
+                  color: cs.errorContainer.withValues( alpha : 0.25),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                     side: BorderSide(
-                      color: cs.error.withOpacity(0.35),
+                      color: cs.error.withValues( alpha : 0.35),
                     ),
                   ),
                   child: ListTile(

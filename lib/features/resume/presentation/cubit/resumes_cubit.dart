@@ -27,15 +27,19 @@ class ResumesCubit extends Cubit<ResumesState> {
   }) : super(const ResumesState());
 
   Future<void> loadResumes() async {
+    if (isClosed) return;
     emit(state.copyWith(status: ResumesStatus.loading, clearError: true));
     try {
+      final resumes = await getResumes();
+      if (isClosed) return;
       emit(
         state.copyWith(
           status: ResumesStatus.success,
-          resumes: await getResumes(),
+          resumes: resumes,
         ),
       );
     } catch (e) {
+      if (isClosed) return;
       emit(
         state.copyWith(
           status: ResumesStatus.failure,
@@ -46,9 +50,7 @@ class ResumesCubit extends Cubit<ResumesState> {
   }
 
   Future<Resume?> createNewResume() async {
-    // IMPORTANT: Create is now a local draft only.
-    // Nothing is written to Firestore until the user enters meaningful data
-    // and presses Save Draft / Complete Resume in the editor.
+
     try {
       final user = auth.currentUser;
       final now = DateTime.now();

@@ -27,7 +27,7 @@ class ResumeCard extends StatelessWidget {
     final cs = theme.colorScheme;
 
     return Material(
-      color: cs.surfaceContainerHighest.withOpacity(0.35),
+      color: cs.surfaceContainerHighest.withValues( alpha : 0.35),
       borderRadius: BorderRadius.circular(18),
       child: InkWell(
         onTap: onTap,
@@ -37,7 +37,7 @@ class ResumeCard extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: cs.outlineVariant.withOpacity(0.4),
+              color: cs.outlineVariant.withValues( alpha : 0.1),
               width: 1,
             ),
           ),
@@ -54,7 +54,7 @@ class ResumeCard extends StatelessWidget {
                     end: Alignment.bottomRight,
                     colors: [
                       cs.primaryContainer,
-                      cs.primaryContainer.withOpacity(0.6),
+                      cs.primaryContainer.withValues( alpha : 0.6),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(12),
@@ -230,11 +230,11 @@ class _StatusChip extends StatelessWidget {
     late Color bg, fg;
     switch (tone) {
       case _ChipTone.success:
-        bg = cs.primaryContainer.withOpacity(0.7);
+        bg = cs.primaryContainer.withValues( alpha : 0.7);
         fg = cs.onPrimaryContainer;
         break;
       case _ChipTone.info:
-        bg = cs.tertiaryContainer.withOpacity(0.7);
+        bg = cs.tertiaryContainer.withValues( alpha : 0.7);
         fg = cs.onTertiaryContainer;
         break;
       case _ChipTone.neutral:

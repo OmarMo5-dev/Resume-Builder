@@ -1,3 +1,4 @@
+import 'package:business_os/features/resume/presentation/widgets/resumes_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -17,26 +18,13 @@ class ResumesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Resumes'),
-        titleTextStyle: theme.textTheme.headlineSmall?.copyWith(
-          fontWeight: FontWeight.w700,
-        ),
-        actions: [
-          IconButton(
-            tooltip: 'Profile',
-            onPressed: () => context.push('/profile'),
-            icon: const Icon(Icons.account_circle_outlined),
-          ),
-          const SizedBox(width: 4),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _create(context),
-        icon: const Icon(Icons.add_rounded),
-        label: const Text('Create Resume'),
-        elevation: 4,
-      ),
+      appBar: ResumesAppBar(onCreate: () => _create(context)),
+      // floatingActionButton: FloatingActionButton.extended(
+      //   onPressed: () => _create(context),
+      //   icon: const Icon(Icons.add_rounded),
+      //   label: const Text('Create Resume'),
+      //   elevation: 4,
+      // ),
       body: BlocConsumer<ResumesCubit, ResumesState>(
         listener: (context, state) {
           if (state.errorMessage != null && state.action == ResumeAction.none) {
@@ -186,15 +174,16 @@ class ResumesPage extends StatelessWidget {
     if (result == null || !context.mounted) return;
     final title = result['title'].trim();
     if (title.isEmpty) return;
-    await context
-        .read<ResumesCubit>()
-        .updateResumeData(resume.copyWith(title: title));
+    await context.read<ResumesCubit>().updateResumeData(
+      resume.copyWith(title: title),
+    );
   }
 }
 
 class _Error extends StatelessWidget {
   final VoidCallback onRetry;
   final String? message;
+
   const _Error({required this.onRetry, this.message});
 
   @override
@@ -209,7 +198,7 @@ class _Error extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: theme.colorScheme.errorContainer.withOpacity(0.4),
+                color: theme.colorScheme.errorContainer.withValues( alpha : 0.4),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -221,8 +210,9 @@ class _Error extends StatelessWidget {
             const SizedBox(height: 20),
             Text(
               'Oops!',
-              style: theme.textTheme.titleLarge
-                  ?.copyWith(fontWeight: FontWeight.w700),
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
             ),
             const SizedBox(height: 6),
             Text(

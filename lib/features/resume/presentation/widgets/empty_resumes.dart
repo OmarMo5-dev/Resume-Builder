@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 class EmptyResumes extends StatelessWidget {
   final VoidCallback onCreate;
 
-  const EmptyResumes({
-    super.key,
-    required this.onCreate,
-  });
+  const EmptyResumes({super.key, required this.onCreate});
 
   @override
   Widget build(BuildContext context) {
@@ -19,21 +16,16 @@ class EmptyResumes extends StatelessWidget {
             Icon(
               Icons.description_outlined,
               size: 72,
-              color: Theme.of(context)
-                  .colorScheme
-                  .primary,
+              color: Theme.of(context).colorScheme.primary,
             ),
 
             const SizedBox(height: 20),
 
             Text(
               'No resumes yet',
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineSmall
-                  ?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 8),
@@ -41,9 +33,7 @@ class EmptyResumes extends StatelessWidget {
             Text(
               'Create your first resume and start building your professional profile.',
               textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium,
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
 
             const SizedBox(height: 24),
