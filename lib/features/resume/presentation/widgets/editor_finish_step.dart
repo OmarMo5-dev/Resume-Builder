@@ -31,14 +31,12 @@ class EditorFinishStep extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [cs.primary, cs.primary.withValues( alpha : .7)],
-              ),
+              color: cs.primary,
               boxShadow: [
                 BoxShadow(
-                  color: cs.primary.withValues( alpha : .3),
-                  blurRadius: 24,
-                  offset: const Offset(0, 10),
+                  color: cs.shadow.withValues(alpha: .08),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
@@ -128,7 +126,7 @@ class _Action extends StatelessWidget {
     final cs = theme.colorScheme;
 
     return Material(
-      color: cs.surfaceContainerHighest.withValues( alpha : .35),
+      color: cs.surfaceContainerHighest.withValues(alpha: .35),
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         onTap: onTap,
@@ -137,7 +135,7 @@ class _Action extends StatelessWidget {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: cs.outlineVariant.withValues( alpha : .4)),
+            border: Border.all(color: cs.outlineVariant.withValues(alpha: .4)),
           ),
           child: Row(
             children: [

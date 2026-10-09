@@ -24,182 +24,168 @@ class ResumeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final isDraft = resume.isDraft;
+
     final cs = theme.colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = (isDark ? cs.surfaceContainerHigh : Colors.white);
 
     return Material(
-      color: cs.surfaceContainerHighest.withValues( alpha : 0.35),
-      borderRadius: BorderRadius.circular(18),
+      color: colors.surfaceContainerLow,
+      borderRadius: BorderRadius.circular(22),
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(22),
         child: Container(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsetsDirectional.fromSTEB(10, 9, 4, 9),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: cs.outlineVariant.withValues( alpha : 0.1),
-              width: 1,
-            ),
+            color: bg,
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.1)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.1),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Thumbnail
-              Container(
-                width: 52,
-                height: 66,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      cs.primaryContainer,
-                      cs.primaryContainer.withValues( alpha : 0.6),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  resume.isDraft
-                      ? Icons.edit_document
-                      : Icons.description_outlined,
-                  color: Colors.white,
-                  size: 26,
-                ),
-              ),
-              const SizedBox(width: 14),
-
-              // Title + subtitle + chips
+              _ResumeThumbnail(isDraft: isDraft),
+              const SizedBox(width: 11),
               Expanded(
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      resume.title,
+                      resume.title.trim().isEmpty
+                          ? 'Untitled resume'
+                          : resume.title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleMedium?.copyWith(
+                      style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w700,
-                        letterSpacing: -0.2,
+                        letterSpacing: -0.15,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 3),
                     Text(
-                      resume.personalInfo.jobTitle.isEmpty
-                          ? (resume.isDraft ? 'Draft' : 'Completed')
+                      resume.personalInfo.jobTitle.trim().isEmpty
+                          ? (isDraft
+                                ? 'Keep editing your resume'
+                                : 'Resume ready')
                           : resume.personalInfo.jobTitle,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: cs.onSurfaceVariant,
+                        color: colors.onSurfaceVariant,
+                        fontSize: 12,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 6,
-                      runSpacing: 4,
+                    const SizedBox(height: 6),
+                    Row(
                       children: [
-                        _StatusChip(
-                          text: resume.isDraft ? 'Draft' : 'Ready',
-                          icon: resume.isDraft
-                              ? Icons.edit_outlined
-                              : Icons.check_circle_outline,
-                          tone: resume.isDraft
-                              ? _ChipTone.neutral
-                              : _ChipTone.success,
-                        ),
-                        if (resume.isPublic)
-                          const _StatusChip(
-                            text: 'Public',
-                            icon: Icons.public_outlined,
-                            tone: _ChipTone.info,
+                        Container(
+                          width: 6,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: isDraft ? colors.tertiary : colors.primary,
                           ),
+                        ),
+                        const SizedBox(width: 5),
+                        Text(
+                          isDraft ? 'Draft' : 'Ready',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: isDraft ? colors.tertiary : colors.primary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        if (resume.isPublic) ...[
+                          const SizedBox(width: 9),
+                          Icon(
+                            Icons.public_rounded,
+                            size: 12,
+                            color: colors.onSurfaceVariant,
+                          ),
+                          const SizedBox(width: 3),
+                          Text(
+                            'Public',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: colors.onSurfaceVariant,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ],
                 ),
               ),
-
-              // Actions
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    tooltip: 'Share PDF',
-                    visualDensity: VisualDensity.compact,
-                    onPressed: onShare,
-                    icon: const Icon(Icons.ios_share_outlined, size: 20),
+              const SizedBox(width: 2),
+              IconButton(
+                tooltip: 'Share PDF',
+                onPressed: onShare,
+                visualDensity: VisualDensity.compact,
+                constraints: const BoxConstraints.tightFor(
+                  width: 36,
+                  height: 36,
+                ),
+                padding: EdgeInsets.zero,
+                icon: const Icon(Icons.ios_share_rounded, size: 18),
+              ),
+              PopupMenuButton<String>(
+                tooltip: 'More options',
+                iconSize: 20,
+                padding: EdgeInsets.zero,
+                onSelected: (value) {
+                  switch (value) {
+                    case 'open':
+                      onTap();
+                      break;
+                    case 'preview':
+                      onPreview();
+                      break;
+                    case 'rename':
+                      onRename();
+                      break;
+                    case 'duplicate':
+                      onDuplicate();
+                      break;
+                    case 'delete':
+                      onDelete();
+                      break;
+                  }
+                },
+                itemBuilder: (_) => [
+                  _menuItem('open', Icons.edit_outlined, 'Edit'),
+                  _menuItem('preview', Icons.visibility_outlined, 'Preview'),
+                  _menuItem(
+                    'rename',
+                    Icons.drive_file_rename_outline,
+                    'Rename',
                   ),
-                  PopupMenuButton<String>(
-                    tooltip: 'More',
-                    icon: const Icon(Icons.more_vert_rounded, size: 20),
-                    onSelected: (value) {
-                      switch (value) {
-                        case 'open':
-                          onTap();
-                          break;
-                        case 'preview':
-                          onPreview();
-                          break;
-                        case 'rename':
-                          onRename();
-                          break;
-                        case 'duplicate':
-                          onDuplicate();
-                          break;
-                        case 'delete':
-                          onDelete();
-                          break;
-                      }
-                    },
-                    itemBuilder: (_) => const [
-                      PopupMenuItem(
-                        value: 'open',
-                        child: ListTile(
-                          dense: true,
-                          contentPadding: EdgeInsets.zero,
-                          leading: Icon(Icons.edit_outlined),
-                          title: Text('Edit'),
-                        ),
+                  _menuItem('duplicate', Icons.copy_rounded, 'Duplicate'),
+                  const PopupMenuDivider(),
+                  PopupMenuItem<String>(
+                    value: 'delete',
+                    child: SizedBox(
+                      width: 168,
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.delete_outline_rounded,
+                            color: colors.error,
+                          ),
+                          const SizedBox(width: 12),
+                          Text('Delete', style: TextStyle(color: colors.error)),
+                        ],
                       ),
-                      PopupMenuItem(
-                        value: 'preview',
-                        child: ListTile(
-                          dense: true,
-                          contentPadding: EdgeInsets.zero,
-                          leading: Icon(Icons.visibility_outlined),
-                          title: Text('Preview'),
-                        ),
-                      ),
-                      PopupMenuItem(
-                        value: 'rename',
-                        child: ListTile(
-                          dense: true,
-                          contentPadding: EdgeInsets.zero,
-                          leading: Icon(Icons.drive_file_rename_outline),
-                          title: Text('Rename'),
-                        ),
-                      ),
-                      PopupMenuItem(
-                        value: 'duplicate',
-                        child: ListTile(
-                          dense: true,
-                          contentPadding: EdgeInsets.zero,
-                          leading: Icon(Icons.copy_all_outlined),
-                          title: Text('Duplicate'),
-                        ),
-                      ),
-                      PopupMenuDivider(),
-                      PopupMenuItem(
-                        value: 'delete',
-                        child: ListTile(
-                          dense: true,
-                          contentPadding: EdgeInsets.zero,
-                          leading: Icon(Icons.delete_outline),
-                          title: Text('Delete'),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ],
               ),
@@ -209,57 +195,59 @@ class ResumeCard extends StatelessWidget {
       ),
     );
   }
+
+  PopupMenuItem<String> _menuItem(String value, IconData icon, String label) {
+    return PopupMenuItem<String>(
+      value: value,
+      child: SizedBox(
+        width: 168,
+        child: Row(
+          children: [
+            Icon(icon, size: 20),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
-enum _ChipTone { neutral, success, info }
+class _ResumeThumbnail extends StatelessWidget {
+  final bool isDraft;
 
-class _StatusChip extends StatelessWidget {
-  final String text;
-  final IconData icon;
-  final _ChipTone tone;
-
-  const _StatusChip({
-    required this.text,
-    required this.icon,
-    this.tone = _ChipTone.neutral,
-  });
+  const _ResumeThumbnail({required this.isDraft});
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    late Color bg, fg;
-    switch (tone) {
-      case _ChipTone.success:
-        bg = cs.primaryContainer.withValues( alpha : 0.7);
-        fg = cs.onPrimaryContainer;
-        break;
-      case _ChipTone.info:
-        bg = cs.tertiaryContainer.withValues( alpha : 0.7);
-        fg = cs.onTertiaryContainer;
-        break;
-      case _ChipTone.neutral:
-        bg = cs.surfaceContainerHighest;
-        fg = cs.onSurfaceVariant;
-        break;
-    }
+    final colors = Theme.of(context).colorScheme;
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      width: 42,
+      height: 52,
       decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(20),
+        color: colors.primaryContainer,
+        borderRadius: BorderRadius.circular(10),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+      child: Stack(
+        alignment: Alignment.center,
         children: [
-          Icon(icon, size: 12, color: fg),
-          const SizedBox(width: 4),
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: fg,
-              letterSpacing: 0.2,
+          Icon(
+            isDraft ? Icons.edit_document : Icons.description_outlined,
+            color: colors.onPrimary,
+            size: 23,
+          ),
+          Positioned(
+            bottom: 7,
+            child: Container(
+              width: 16,
+              height: 2,
+              decoration: BoxDecoration(
+                color: colors.onPrimary.withValues(alpha: 0.65),
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
           ),
         ],

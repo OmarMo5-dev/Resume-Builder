@@ -226,6 +226,8 @@ class _ResumeEditorViewState extends State<_ResumeEditorView> {
       builder: (context, shell) {
         final isSaving = shell.status == EditorStatus.saving;
 
+        final keyboardIsOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
+
         return PopScope(
           canPop: false,
           onPopInvokedWithResult: (didPop, _) async {
@@ -329,15 +331,16 @@ class _ResumeEditorViewState extends State<_ResumeEditorView> {
                     ),
                   ),
                 ),
-                EditorBottomBar(
-                  currentIndex: _currentStep,
-                  totalSteps: steps.length,
-                  isSaving: isSaving,
-                  onBack: _prevStep,
-                  onNext: _nextStep,
-                  onSaveDraft: () => _save(complete: false),
-                  onComplete: () => _save(complete: true),
-                ),
+                if (!keyboardIsOpen)
+                  EditorBottomBar(
+                    currentIndex: _currentStep,
+                    totalSteps: steps.length,
+                    isSaving: isSaving,
+                    onBack: _prevStep,
+                    onNext: _nextStep,
+                    onSaveDraft: () => _save(complete: false),
+                    onComplete: () => _save(complete: true),
+                  ),
               ],
             ),
           ),

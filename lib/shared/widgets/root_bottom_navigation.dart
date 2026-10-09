@@ -11,16 +11,11 @@ class RootNavItem {
     required this.activeIcon,
   });
 }
-
-/// Floating pill-style bottom nav.
-///
-/// Matches the design of [_buildFloatingNavBar] but as a reusable widget.
 class RootBottomNavigation extends StatelessWidget {
   final List<RootNavItem> items;
   final int currentIndex;
   final ValueChanged<int> onChanged;
 
-  /// Optional tweaks (defaults match the original design)
   final double? horizontalPadding;
   final Color? backgroundColor;
   final Color? indicatorColor;
@@ -50,7 +45,7 @@ class RootBottomNavigation extends StatelessWidget {
     return SafeArea(
       top: false,
       minimum: EdgeInsets.only(
-        bottom: 10,
+        bottom: 20,
         left: horizontalPadding ?? 60,
         right: horizontalPadding ?? 60,
       ),

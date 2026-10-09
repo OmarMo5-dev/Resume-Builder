@@ -1,6 +1,9 @@
 import 'dart:typed_data';
 
+import 'package:business_os/features/resume/presentation/widgets/resume_loading.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -19,22 +22,13 @@ import 'resume_formatters.dart';
 class ResumePdfException implements Exception {
   final String message;
   final Object? cause;
+
   const ResumePdfException(this.message, [this.cause]);
 
   @override
   String toString() => message;
 }
 
-/// Generates ATS-friendly resume PDFs entirely on-device.
-///
-/// Design rules (all enforced here):
-///  * every collection is strongly typed - no `dynamic` receivers, so the
-///    `(dynamic) => dynamic is not a subtype of (String) => bool` runtime
-///    failure cannot occur;
-///  * bullets and icons are drawn with PDF primitives, never glyphs/emoji/SVG/
-///    network images;
-///  * the page body is a flat list of small widgets so `MultiPage` can break
-///    between any two of them (no clipping, no overflow).
 class ResumePdfService {
   const ResumePdfService._();
 
@@ -43,7 +37,9 @@ class ResumePdfService {
       final style = await _Style.load(resume.templateId);
       final name = ResumeText.clean(resume.personalInfo.fullName);
       final document = pw.Document(
-        title: ResumeText.clean(resume.title).isEmpty ? 'Resume' : ResumeText.clean(resume.title),
+        title: ResumeText.clean(resume.title).isEmpty
+            ? 'Resume'
+            : ResumeText.clean(resume.title),
         author: name,
         creator: 'Business OS',
       );
@@ -53,7 +49,12 @@ class ResumePdfService {
         pw.MultiPage(
           pageTheme: pw.PageTheme(
             pageFormat: PdfPageFormat.a4,
-            margin: pw.EdgeInsets.fromLTRB(style.margin, style.margin * 0.9, style.margin, style.margin * 0.8),
+            margin: pw.EdgeInsets.fromLTRB(
+              style.margin,
+              style.margin * 0.9,
+              style.margin,
+              style.margin * 0.8,
+            ),
             theme: style.theme,
           ),
           header: (pw.Context context) {
@@ -62,11 +63,17 @@ class ResumePdfService {
               padding: const pw.EdgeInsets.only(bottom: 6),
               margin: const pw.EdgeInsets.only(bottom: 10),
               decoration: pw.BoxDecoration(
-                border: pw.Border(bottom: pw.BorderSide(color: style.rule, width: 0.5)),
+                border: pw.Border(
+                  bottom: pw.BorderSide(color: style.rule, width: 0.5),
+                ),
               ),
               child: pw.Text(
                 name,
-                style: pw.TextStyle(fontSize: style.metaSize + 1, color: style.muted, fontWeight: pw.FontWeight.bold),
+                style: pw.TextStyle(
+                  fontSize: style.metaSize + 1,
+                  color: style.muted,
+                  fontWeight: pw.FontWeight.bold,
+                ),
               ),
             );
           },
@@ -92,13 +99,18 @@ class ResumePdfService {
   static Future<void> share(Resume resume) async {
     final bytes = await build(resume);
     try {
-      final ok = await Printing.sharePdf(bytes: bytes, filename: fileName(resume));
+      final ok = await Printing.sharePdf(
+        bytes: bytes,
+        filename: fileName(resume),
+      );
       if (!ok) debugPrint('Share sheet was dismissed or unavailable.');
     } catch (e, st) {
       debugPrint('PDF share failed: $e\n$st');
       throw ResumePdfException('PDF sharing failed: $e', e);
     }
   }
+
+
 
   /// Opens the system print / save-as-PDF dialog with the generated document.
   static Future<void> export(Resume resume) async {
@@ -250,9 +262,18 @@ class _Style {
   /// asset cannot be loaded, so PDF generation never depends on it.
   static Future<pw.ThemeData> _rubikTheme() async {
     try {
-      final regular = pw.Font.ttf(await rootBundle.load('assets/fonts/Rubik-Regular.ttf'));
-      final bold = pw.Font.ttf(await rootBundle.load('assets/fonts/Rubik-Bold.ttf'));
-      return pw.ThemeData.withFont(base: regular, bold: bold, italic: regular, boldItalic: bold);
+      final regular = pw.Font.ttf(
+        await rootBundle.load('assets/fonts/Rubik-Regular.ttf'),
+      );
+      final bold = pw.Font.ttf(
+        await rootBundle.load('assets/fonts/Rubik-Bold.ttf'),
+      );
+      return pw.ThemeData.withFont(
+        base: regular,
+        bold: bold,
+        italic: regular,
+        boldItalic: bold,
+      );
     } catch (e) {
       debugPrint('Rubik font unavailable for PDF, using Helvetica: $e');
       return pw.ThemeData.withFont(
@@ -271,6 +292,7 @@ class _Contact {
   final _IconKind icon;
   final String label;
   final String? destination;
+
   const _Contact(this.icon, this.label, this.destination);
 }
 
@@ -281,6 +303,7 @@ class _Contact {
 class _ResumeBody {
   final Resume resume;
   final _Style s;
+
   const _ResumeBody(this.resume, this.s);
 
   List<pw.Widget> build() {
@@ -290,10 +313,12 @@ class _ResumeBody {
     if (summary.isNotEmpty) {
       final paragraphs = <pw.Widget>[];
       for (final line in ResumeText.lines(summary)) {
-        paragraphs.add(pw.Padding(
-          padding: const pw.EdgeInsets.only(bottom: 3),
-          child: pw.Text(line, style: _body()),
-        ));
+        paragraphs.add(
+          pw.Padding(
+            padding: const pw.EdgeInsets.only(bottom: 3),
+            child: pw.Text(line, style: _body()),
+          ),
+        );
       }
       out.addAll(_section('PROFESSIONAL SUMMARY', paragraphs));
     }
@@ -339,14 +364,22 @@ class _ResumeBody {
 
   // ---- text styles ----------------------------------------------------------
 
-  pw.TextStyle _body() => pw.TextStyle(fontSize: s.bodySize, color: s.ink, lineSpacing: 2);
+  pw.TextStyle _body() =>
+      pw.TextStyle(fontSize: s.bodySize, color: s.ink, lineSpacing: 2);
+
   pw.TextStyle _meta() => pw.TextStyle(fontSize: s.metaSize, color: s.muted);
-  pw.TextStyle _heading() => pw.TextStyle(fontSize: s.headingSize, color: s.ink, fontWeight: pw.FontWeight.bold);
+
+  pw.TextStyle _heading() => pw.TextStyle(
+    fontSize: s.headingSize,
+    color: s.ink,
+    fontWeight: pw.FontWeight.bold,
+  );
+
   pw.TextStyle _linkStyle(double size) => pw.TextStyle(
-        fontSize: size,
-        color: s.link,
-        decoration: pw.TextDecoration.underline,
-      );
+    fontSize: size,
+    color: s.link,
+    decoration: pw.TextDecoration.underline,
+  );
 
   // ---- header ---------------------------------------------------------------
 
@@ -354,17 +387,27 @@ class _ResumeBody {
     final p = resume.personalInfo;
     final list = <_Contact>[];
     final email = ResumeText.clean(p.email);
-    if (email.isNotEmpty) list.add(_Contact(_IconKind.email, email, ResumeLinks.normalize(email)));
+    if (email.isNotEmpty)
+      list.add(_Contact(_IconKind.email, email, ResumeLinks.normalize(email)));
     final phone = ResumeText.clean(p.phone);
-    if (phone.isNotEmpty) list.add(_Contact(_IconKind.phone, phone, ResumeLinks.phone(phone)));
+    if (phone.isNotEmpty)
+      list.add(_Contact(_IconKind.phone, phone, ResumeLinks.phone(phone)));
     final location = ResumeText.clean(p.location);
-    if (location.isNotEmpty) list.add(_Contact(_IconKind.location, location, null));
+    if (location.isNotEmpty)
+      list.add(_Contact(_IconKind.location, location, null));
     final linkedin = ResumeLinks.normalize(p.linkedin);
-    if (linkedin != null) list.add(_Contact(_IconKind.linkedin, ResumeLinks.display(linkedin), linkedin));
+    if (linkedin != null)
+      list.add(
+        _Contact(_IconKind.linkedin, ResumeLinks.display(linkedin), linkedin),
+      );
     final github = ResumeLinks.normalize(p.github);
-    if (github != null) list.add(_Contact(_IconKind.github, ResumeLinks.display(github), github));
+    if (github != null)
+      list.add(_Contact(_IconKind.github, ResumeLinks.display(github), github));
     final website = ResumeLinks.normalize(p.website);
-    if (website != null) list.add(_Contact(_IconKind.website, ResumeLinks.display(website), website));
+    if (website != null)
+      list.add(
+        _Contact(_IconKind.website, ResumeLinks.display(website), website),
+      );
     return list;
   }
 
@@ -395,7 +438,9 @@ class _ResumeBody {
     final name = nameText.isEmpty ? 'Your Name' : nameText;
     final job = ResumeText.clean(p.jobTitle);
     final contacts = _contacts();
-    final contactWidgets = <pw.Widget>[for (final c in contacts) _contactWidget(c)];
+    final contactWidgets = <pw.Widget>[
+      for (final c in contacts) _contactWidget(c),
+    ];
 
     switch (s.header) {
       case _HeaderKind.split:
@@ -412,10 +457,23 @@ class _ResumeBody {
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
-                    pw.Text(name, style: pw.TextStyle(fontSize: s.nameSize, color: s.accent, fontWeight: pw.FontWeight.bold)),
+                    pw.Text(
+                      name,
+                      style: pw.TextStyle(
+                        fontSize: s.nameSize,
+                        color: s.accent,
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                    ),
                     if (job.isNotEmpty) ...[
                       pw.SizedBox(height: 4),
-                      pw.Text(job, style: pw.TextStyle(fontSize: s.titleSize, color: s.muted)),
+                      pw.Text(
+                        job,
+                        style: pw.TextStyle(
+                          fontSize: s.titleSize,
+                          color: s.muted,
+                        ),
+                      ),
                     ],
                   ],
                 ),
@@ -427,7 +485,10 @@ class _ResumeBody {
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
                     for (final w in contactWidgets)
-                      pw.Padding(padding: const pw.EdgeInsets.only(bottom: 3), child: w),
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.only(bottom: 3),
+                        child: w,
+                      ),
                   ],
                 ),
               ),
@@ -443,10 +504,20 @@ class _ResumeBody {
           child: pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Text(name, style: pw.TextStyle(fontSize: s.nameSize, color: s.ink, fontWeight: pw.FontWeight.bold)),
+              pw.Text(
+                name,
+                style: pw.TextStyle(
+                  fontSize: s.nameSize,
+                  color: s.ink,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
               if (job.isNotEmpty) ...[
                 pw.SizedBox(height: 2),
-                pw.Text(job, style: pw.TextStyle(fontSize: s.titleSize, color: s.muted)),
+                pw.Text(
+                  job,
+                  style: pw.TextStyle(fontSize: s.titleSize, color: s.muted),
+                ),
               ],
               if (contactWidgets.isNotEmpty) ...[
                 pw.SizedBox(height: 7),
@@ -464,10 +535,22 @@ class _ResumeBody {
           child: pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.center,
             children: [
-              pw.Text(name, textAlign: pw.TextAlign.center, style: pw.TextStyle(fontSize: s.nameSize, color: s.ink, fontWeight: pw.FontWeight.bold)),
+              pw.Text(
+                name,
+                textAlign: pw.TextAlign.center,
+                style: pw.TextStyle(
+                  fontSize: s.nameSize,
+                  color: s.ink,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
               if (job.isNotEmpty) ...[
                 pw.SizedBox(height: 3),
-                pw.Text(job, textAlign: pw.TextAlign.center, style: pw.TextStyle(fontSize: s.titleSize, color: s.muted)),
+                pw.Text(
+                  job,
+                  textAlign: pw.TextAlign.center,
+                  style: pw.TextStyle(fontSize: s.titleSize, color: s.muted),
+                ),
               ],
               if (contactWidgets.isNotEmpty) ...[
                 pw.SizedBox(height: 7),
@@ -510,9 +593,20 @@ class _ResumeBody {
           child: pw.Row(
             crossAxisAlignment: pw.CrossAxisAlignment.center,
             children: [
-              pw.Container(width: 4, height: s.sectionSize + 2, color: s.accent),
+              pw.Container(
+                width: 4,
+                height: s.sectionSize + 2,
+                color: s.accent,
+              ),
               pw.SizedBox(width: 6),
-              pw.Text(title, style: pw.TextStyle(fontSize: s.sectionSize, color: s.accent, fontWeight: pw.FontWeight.bold)),
+              pw.Text(
+                title,
+                style: pw.TextStyle(
+                  fontSize: s.sectionSize,
+                  color: s.accent,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
               pw.SizedBox(width: 8),
               pw.Expanded(child: pw.Container(height: 0.6, color: s.rule)),
             ],
@@ -524,7 +618,15 @@ class _ResumeBody {
           child: pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Text(title, style: pw.TextStyle(fontSize: s.sectionSize, color: s.muted, fontWeight: pw.FontWeight.bold, letterSpacing: 1.2)),
+              pw.Text(
+                title,
+                style: pw.TextStyle(
+                  fontSize: s.sectionSize,
+                  color: s.muted,
+                  fontWeight: pw.FontWeight.bold,
+                  letterSpacing: 1.2,
+                ),
+              ),
               pw.SizedBox(height: 3),
               pw.Container(height: 0.4, color: s.rule),
             ],
@@ -536,7 +638,14 @@ class _ResumeBody {
           child: pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Text(title, style: pw.TextStyle(fontSize: s.sectionSize, color: s.ink, fontWeight: pw.FontWeight.bold)),
+              pw.Text(
+                title,
+                style: pw.TextStyle(
+                  fontSize: s.sectionSize,
+                  color: s.ink,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
               pw.SizedBox(height: 3),
               pw.Container(height: 0.9, color: s.rule),
             ],
@@ -547,7 +656,12 @@ class _ResumeBody {
 
   // ---- entry builders: each returns [headerBlock, bullets..., spacer] --------
 
-  pw.Widget _lineText(String text, {bool bold = false, bool muted = true, double? size}) {
+  pw.Widget _lineText(
+    String text, {
+    bool bold = false,
+    bool muted = true,
+    double? size,
+  }) {
     return pw.Padding(
       padding: const pw.EdgeInsets.only(top: 1.5),
       child: pw.Text(
@@ -581,7 +695,10 @@ class _ResumeBody {
             width: 3,
             height: 3,
             margin: pw.EdgeInsets.only(top: s.bodySize * 0.5, right: 7),
-            decoration: pw.BoxDecoration(color: s.ink, shape: pw.BoxShape.circle),
+            decoration: pw.BoxDecoration(
+              color: s.ink,
+              shape: pw.BoxShape.circle,
+            ),
           ),
           pw.Expanded(child: pw.Text(text, style: _body())),
         ],
@@ -590,9 +707,16 @@ class _ResumeBody {
   }
 
   pw.Widget _label(String text) => pw.Padding(
-        padding: const pw.EdgeInsets.only(top: 5),
-        child: pw.Text(text, style: pw.TextStyle(fontSize: s.metaSize, color: s.ink, fontWeight: pw.FontWeight.bold)),
-      );
+    padding: const pw.EdgeInsets.only(top: 5),
+    child: pw.Text(
+      text,
+      style: pw.TextStyle(
+        fontSize: s.metaSize,
+        color: s.ink,
+        fontWeight: pw.FontWeight.bold,
+      ),
+    ),
+  );
 
   pw.Widget _linkLine(String label, String? raw) {
     final url = ResumeLinks.normalize(raw);
@@ -602,11 +726,21 @@ class _ResumeBody {
       child: pw.Row(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
-          pw.Text('$label: ', style: pw.TextStyle(fontSize: s.metaSize, color: s.ink, fontWeight: pw.FontWeight.bold)),
+          pw.Text(
+            '$label: ',
+            style: pw.TextStyle(
+              fontSize: s.metaSize,
+              color: s.ink,
+              fontWeight: pw.FontWeight.bold,
+            ),
+          ),
           pw.Expanded(
             child: pw.UrlLink(
               destination: url,
-              child: pw.Text(ResumeLinks.display(url), style: _linkStyle(s.metaSize)),
+              child: pw.Text(
+                ResumeLinks.display(url),
+                style: _linkStyle(s.metaSize),
+              ),
             ),
           ),
         ],
@@ -622,11 +756,13 @@ class _ResumeBody {
     final location = ResumeText.clean(e.location);
     final dates = ResumeText.dateRange(e.startDate, e.endDate, e.isCurrent);
     final bullets = ResumeText.cleanList(e.description);
-    if (position.isEmpty && company.isEmpty && bullets.isEmpty) return const <pw.Widget>[];
+    if (position.isEmpty && company.isEmpty && bullets.isEmpty)
+      return const <pw.Widget>[];
 
     return <pw.Widget>[
       _entryHeader(position, [
-        if (company.isNotEmpty) _lineText(company, bold: true, muted: false, size: s.bodySize),
+        if (company.isNotEmpty)
+          _lineText(company, bold: true, muted: false, size: s.bodySize),
         if (location.isNotEmpty) _lineText(location),
         if (dates.isNotEmpty) _lineText(dates),
       ]),
@@ -642,7 +778,12 @@ class _ResumeBody {
     final tech = ResumeText.cleanList(e.technologies);
     final hasGithub = ResumeLinks.normalize(e.githubUrl) != null;
     final hasLive = ResumeLinks.normalize(e.liveUrl) != null;
-    if (name.isEmpty && bullets.isEmpty && tech.isEmpty && !hasGithub && !hasLive) return const <pw.Widget>[];
+    if (name.isEmpty &&
+        bullets.isEmpty &&
+        tech.isEmpty &&
+        !hasGithub &&
+        !hasLive)
+      return const <pw.Widget>[];
 
     return <pw.Widget>[
       _entryHeader(name, [if (role.isNotEmpty) _lineText(role)]),
@@ -674,10 +815,12 @@ class _ResumeBody {
     final date = ResumeText.clean(e.date);
     final lines = ResumeText.lines(e.description);
     final hasUrl = ResumeLinks.normalize(e.credentialUrl) != null;
-    if (name.isEmpty && provider.isEmpty && lines.isEmpty && !hasUrl) return const <pw.Widget>[];
+    if (name.isEmpty && provider.isEmpty && lines.isEmpty && !hasUrl)
+      return const <pw.Widget>[];
     return <pw.Widget>[
       _entryHeader(name, [
-        if (provider.isNotEmpty) _lineText(provider, bold: true, muted: false, size: s.bodySize),
+        if (provider.isNotEmpty)
+          _lineText(provider, bold: true, muted: false, size: s.bodySize),
         if (date.isNotEmpty) _lineText(date),
       ]),
       for (final l in lines) _bullet(l),
@@ -692,10 +835,12 @@ class _ResumeBody {
     final location = ResumeText.clean(e.location);
     final dates = ResumeText.dateRange(e.startDate, e.endDate, e.isCurrent);
     final lines = ResumeText.lines(e.description);
-    if (degree.isEmpty && institution.isEmpty && lines.isEmpty) return const <pw.Widget>[];
+    if (degree.isEmpty && institution.isEmpty && lines.isEmpty)
+      return const <pw.Widget>[];
     return <pw.Widget>[
       _entryHeader(degree, [
-        if (institution.isNotEmpty) _lineText(institution, bold: true, muted: false, size: s.bodySize),
+        if (institution.isNotEmpty)
+          _lineText(institution, bold: true, muted: false, size: s.bodySize),
         if (location.isNotEmpty) _lineText(location),
         if (dates.isNotEmpty) _lineText(dates),
       ]),
@@ -737,13 +882,19 @@ class _PdfIcon {
           height: size,
           child: pw.CustomPaint(
             size: PdfPoint(size, size),
-            painter: (PdfGraphics canvas, PdfPoint box) => _paint(canvas, kind, size, color),
+            painter: (PdfGraphics canvas, PdfPoint box) =>
+                _paint(canvas, kind, size, color),
           ),
         );
     }
   }
 
-  static pw.Widget _badge(String text, double size, PdfColor color, {required bool circle}) {
+  static pw.Widget _badge(
+    String text,
+    double size,
+    PdfColor color, {
+    required bool circle,
+  }) {
     return pw.Container(
       width: size,
       height: size,
@@ -751,11 +902,17 @@ class _PdfIcon {
       decoration: pw.BoxDecoration(
         color: color,
         shape: circle ? pw.BoxShape.circle : pw.BoxShape.rectangle,
-        borderRadius: circle ? null : const pw.BorderRadius.all(pw.Radius.circular(1.5)),
+        borderRadius: circle
+            ? null
+            : const pw.BorderRadius.all(pw.Radius.circular(1.5)),
       ),
       child: pw.Text(
         text,
-        style: pw.TextStyle(fontSize: text.length > 2 ? size * 0.42 : size * 0.62, color: PdfColors.white, fontWeight: pw.FontWeight.bold),
+        style: pw.TextStyle(
+          fontSize: text.length > 2 ? size * 0.42 : size * 0.62,
+          color: PdfColors.white,
+          fontWeight: pw.FontWeight.bold,
+        ),
       ),
     );
   }

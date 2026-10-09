@@ -92,21 +92,17 @@ Future<void> setupDependencies() async {
   getIt.registerLazySingleton(() => SignOut(getIt<AuthRepository>()));
 
   /// Profile
-
   getIt.registerLazySingleton<ProfileRemoteDataSource>(
         () => ProfileRemoteDataSource(
       firestore: getIt<FirebaseFirestore>(),
       auth: getIt<FirebaseAuth>(),
     ),
   );
-
   getIt.registerLazySingleton<ProfileRepository>(
         () => FirestoreProfileRepository(getIt<ProfileRemoteDataSource>()),
   );
-
   getIt.registerLazySingleton(() => GetProfile(getIt<ProfileRepository>()));
   getIt.registerLazySingleton(() => UpdateProfile(getIt<ProfileRepository>()));
-
   getIt.registerFactory<ProfileCubit>(
         () => ProfileCubit(
       getProfile: getIt<GetProfile>(),
@@ -155,7 +151,5 @@ Future<void> setupDependencies() async {
       auth: getIt<FirebaseAuth>(),
     ),
   );
-
-  // ResumeEditorCubit is created by the editor page because it needs the selected resume.
 
 }

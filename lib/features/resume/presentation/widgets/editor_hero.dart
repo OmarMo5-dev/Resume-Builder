@@ -19,13 +19,9 @@ class EditorHero extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [cs.primaryContainer, cs.primaryContainer.withValues( alpha : .55)],
-          ),
+          color: cs.surfaceContainerLow,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: cs.primary.withValues( alpha : .15)),
+          border: Border.all(color: cs.primary.withValues(alpha: .15)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,7 +78,7 @@ class EditorHero extends StatelessWidget {
                       builder: (_, value, __) => LinearProgressIndicator(
                         value: value,
                         minHeight: 7,
-                        backgroundColor: cs.surface.withValues( alpha : .5),
+                        backgroundColor: cs.surfaceContainerHighest,
                       ),
                     ),
                   ),

@@ -5,6 +5,12 @@ class ResumeLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: CircularProgressIndicator());
+    return const Center(
+      child: Row(
+        spacing: 15,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [CircularProgressIndicator(), Text("Loading....")],
+      ),
+    );
   }
 }

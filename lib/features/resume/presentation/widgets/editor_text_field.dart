@@ -70,6 +70,7 @@ class _EditorTextFieldState extends State<EditorTextField> {
     return TextField(
       controller: widget.controller,
       focusNode: _focusNode,
+      onTapOutside: (_) => _focusNode.unfocus(),
       keyboardType: widget.multiline
           ? TextInputType.multiline
           : widget.keyboardType,

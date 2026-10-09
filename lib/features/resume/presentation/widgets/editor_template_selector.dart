@@ -121,7 +121,7 @@ class _TemplateCard extends StatelessWidget {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: selected
-                ? cs.primaryContainer.withValues( alpha : .55)
+                ? cs.primaryContainer.withValues( alpha : .15)
                 : cs.surfaceContainerHighest.withValues( alpha : .35),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
