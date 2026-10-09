@@ -28,6 +28,7 @@ dependencies:
   url_launcher: ^6.3.2
   printing: ^5.14.3
   pdf: ^3.12.0
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
@@ -43,6 +44,7 @@ flutter:
   assets:
     - assets/icons/
     - assets/fonts/
+    - assets/logos/
 
   fonts:
     - family: Rubik
@@ -57,10 +59,16 @@ flutter:
           weight: 700
         - asset: assets/fonts/Rubik-ExtraBold.ttf
           weight: 800
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
 
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/logos/Logo.png"
+  min_sdk_android: 21
+  adaptive_icon_background: "#DDF7FF"
+  adaptive_icon_foreground: "assets/logos/Logo.png"
+  remove_alpha_ios: true
+
+  android_legacy: true
+  android_adaptive_icon_background: "#DDF7FF"
