@@ -1,3 +1,4 @@
+import 'package:business_os/shared/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -55,6 +56,8 @@ class _ResumeEditorViewState extends State<_ResumeEditorView> {
 
   bool _pdfBusy = false;
   int _currentStep = 0;
+
+  int _maxUnlockedStep = 0;
 
   static const steps = <EditorStepInfo>[
     EditorStepInfo(label: 'Basics', icon: Icons.tune_rounded),
@@ -196,12 +199,31 @@ class _ResumeEditorViewState extends State<_ResumeEditorView> {
     return discard == true;
   }
 
+
+
   void _nextStep() {
     FocusManager.instance.primaryFocus?.unfocus();
-    if (_currentStep < steps.length - 1) {
-      setState(() => _currentStep++);
+
+    if (_currentStep >= steps.length - 1) return;
+
+    if (!_isCurrentStepComplete()) {
+      _toast(
+        'Please complete this step before continuing.',
+        error: true,
+      );
+      return;
     }
+
+    setState(() {
+      _maxUnlockedStep = _currentStep + 1 > _maxUnlockedStep
+          ? _currentStep + 1
+          : _maxUnlockedStep;
+
+      _currentStep++;
+    });
   }
+
+
 
   void _prevStep() {
     FocusManager.instance.primaryFocus?.unfocus();
@@ -211,11 +233,65 @@ class _ResumeEditorViewState extends State<_ResumeEditorView> {
   }
 
   void _goToStep(int index) {
+
+    if(index > _maxUnlockedStep){
+      _toast("Complete the previous step first" , error: true);
+      return;
+    }
+
     FocusManager.instance.primaryFocus?.unfocus();
     if (index != _currentStep) {
       setState(() => _currentStep = index);
     }
   }
+
+
+
+  bool _isCurrentStepComplete() {
+    final resume = cubit.state.resume;
+
+    switch (_currentStep) {
+      case 0: // Basics
+        return _title.text.trim().isNotEmpty;
+
+      case 1: // Personal
+        final name = _name.text.trim();
+        final job = _job.text.trim();
+        final email = _email.text.trim();
+
+        return name.isNotEmpty &&
+            job.isNotEmpty &&
+            RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
+                .hasMatch(email);
+
+      case 2: // Summary
+        return _summary.text.trim().isNotEmpty;
+
+      case 3: // Experience
+        return resume.experience.isNotEmpty;
+
+      case 4: // Education
+        return resume.education.isNotEmpty;
+
+      case 5: // Projects
+        return resume.projects.isNotEmpty;
+
+      case 6: // Skills
+        return resume.skills.any(
+              (group) =>
+          group.category.trim().isNotEmpty &&
+              group.items.any((skill) => skill.trim().isNotEmpty),
+        );
+
+      case 7: // More
+      // Courses and languages are optional.
+        return true;
+
+      default:
+        return true;
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -243,43 +319,55 @@ class _ResumeEditorViewState extends State<_ResumeEditorView> {
           child: Scaffold(
             resizeToAvoidBottomInset: true,
             backgroundColor: cs.surface,
-            appBar: AppBar(
-              scrolledUnderElevation: 0,
-              titleSpacing: 0,
-              title: const Text('Resume Editor'),
-              actions: [
-                IconButton(
-                  tooltip: 'Preview',
-                  icon: const Icon(Icons.visibility_outlined),
-                  onPressed: () => context.push(
-                    '/resumes/preview',
-                    extra: cubit.state.resume,
+            appBar: CustomAppBar(
+              title: "Resume Editor",
+              icon: Icons.arrow_back,
+              onTap: () => context.pop(),
+                actions: [
+                  IconButton(
+                    tooltip: 'Preview',
+                    icon: const Icon(Icons.visibility_outlined , color: Colors.white,),
+                    onPressed: () => context.push(
+                      '/resumes/preview',
+                      extra: cubit.state.resume,
+                    ),
                   ),
-                ),
-                IconButton(
-                  tooltip: 'Export PDF',
-                  icon: const Icon(Icons.picture_as_pdf_outlined),
-                  onPressed: _pdfBusy
-                      ? null
-                      : () => _pdf(ResumePdfService.export),
-                ),
-                IconButton(
-                  tooltip: 'Share PDF',
-                  icon: const Icon(Icons.ios_share_outlined),
-                  onPressed: _pdfBusy
-                      ? null
-                      : () => _pdf(ResumePdfService.share),
-                ),
-                const SizedBox(width: 6),
-              ],
+                  IconButton(
+                    tooltip: 'Export PDF',
+                    icon: const Icon(Icons.picture_as_pdf_outlined ,color: Colors.white),
+                    onPressed: _pdfBusy
+                        ? null
+                        : () => _pdf(ResumePdfService.export),
+                  ),
+                  IconButton(
+                    tooltip: 'Share PDF',
+                    // style: IconButton.styleFrom(
+                    //   backgroundColor: Colors.white.withValues(alpha: 0.15),
+                    //   shape: RoundedRectangleBorder(
+                    //     borderRadius: BorderRadius.circular(12)
+                    //   ),
+                    //   side: BorderSide(
+                    //     color: Colors.white.withValues(alpha: 0.2),
+                    //     width: 1,
+                    //   ),
+                    // ),
+                    icon: const Icon(Icons.ios_share, color: Colors.white , size: 18,),
+                    onPressed: _pdfBusy
+                        ? null
+                        : () => _pdf(ResumePdfService.share),
+                  ),
+                  const SizedBox(width: 6),
+                ],
             ),
             body: Column(
               children: [
+                SizedBox(height: 16,),
                 EditorProgressHeader(
                   steps: steps,
                   currentIndex: _currentStep,
                   onStepTap: _goToStep,
                 ),
+                SizedBox(height: 10,),
                 BlocBuilder<ResumeEditorCubit, ResumeEditorState>(
                   builder: (context, state) {
                     if (_currentStep != 0) {

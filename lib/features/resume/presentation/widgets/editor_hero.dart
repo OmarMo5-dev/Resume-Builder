@@ -78,7 +78,7 @@ class EditorHero extends StatelessWidget {
                       builder: (_, value, __) => LinearProgressIndicator(
                         value: value,
                         minHeight: 7,
-                        backgroundColor: cs.surfaceContainerHighest,
+                        backgroundColor: Colors.grey.withValues(alpha: 0.3),
                       ),
                     ),
                   ),

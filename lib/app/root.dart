@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../app/di/injection_container.dart';
+import '../features/auth/presentation/cubit/auth_cubit.dart';
 import '../features/profile/presentation/cubit/profile_cubit.dart';
 import '../features/profile/presentation/pages/profile_page.dart';
 import '../features/resume/presentation/cubit/resumes_cubit.dart';
@@ -76,16 +77,17 @@ class _DashboardTab extends StatelessWidget {
   }
 }
 
-
-
 class _ProfileTab extends StatelessWidget {
   const _ProfileTab();
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<ProfileCubit>()..load(),
-      child: const ProfilePage(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => getIt<ProfileCubit>()..load()),
+        BlocProvider(create: (_) => getIt<AuthCubit>()),
+      ],
+      child: ProfilePage(),
     );
   }
 }

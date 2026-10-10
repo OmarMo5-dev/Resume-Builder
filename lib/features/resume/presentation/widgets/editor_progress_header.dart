@@ -31,7 +31,7 @@ class EditorProgressHeader extends StatelessWidget {
         color: cs.surface,
         border: Border(
           bottom: BorderSide(
-            color: cs.outlineVariant.withValues( alpha : .4),
+            color: cs.outlineVariant.withValues( alpha : .12),
             width: .5,
           ),
         ),
@@ -66,10 +66,10 @@ class EditorProgressHeader extends StatelessWidget {
               tween: Tween(begin: 0, end: progress),
               duration: const Duration(milliseconds: 420),
               curve: Curves.easeOutCubic,
-              builder: (_, value, __) => LinearProgressIndicator(
+              builder: (_, value, _) => LinearProgressIndicator(
                 value: value,
                 minHeight: 5,
-                backgroundColor: cs.surfaceContainerHighest,
+                backgroundColor: Colors.grey.withValues(alpha: 0.3),
               ),
             ),
           ),
@@ -79,7 +79,7 @@ class EditorProgressHeader extends StatelessWidget {
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: steps.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 8),
+              separatorBuilder: (_, _) => const SizedBox(width: 8),
               itemBuilder: (_, index) {
                 final active = index == currentIndex;
                 final done = index < currentIndex;
@@ -120,7 +120,7 @@ class _StepChip extends StatelessWidget {
     final bg = isActive
         ? cs.primary
         : isDone
-        ? cs.primaryContainer.withValues( alpha : .75)
+        ? cs.primaryContainer.withValues( alpha : .2)
         : cs.surfaceContainerHighest.withValues( alpha : .65);
 
     final fg = isActive
@@ -143,9 +143,9 @@ class _StepChip extends StatelessWidget {
             boxShadow: isActive
                 ? [
                     BoxShadow(
-                      color: cs.primary.withValues( alpha : .22),
-                      blurRadius: 10,
-                      offset: const Offset(0, 3),
+                      color: cs.primary.withValues( alpha : .12),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
                     ),
                   ]
                 : null,

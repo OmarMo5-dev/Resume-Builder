@@ -32,7 +32,7 @@ final isDark = Theme.of(context).brightness == Brightness.dark;
         border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.1)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.1),
+            color: Colors.grey.withValues(alpha: isDark ? 0.25 : 0.2),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -61,7 +61,7 @@ final isDark = Theme.of(context).brightness == Brightness.dark;
                 child: Text(
                   'Welcome back, $firstName',
                   style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w700,
                     letterSpacing: -0.6,
                   ),
                 ),
@@ -180,7 +180,7 @@ class _StatCard extends StatelessWidget {
         border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.1)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.1),
+            color: Colors.grey.withValues(alpha: isDark ? 0.25 : 0.2),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),

@@ -2,8 +2,8 @@ import 'package:business_os/features/profile/presentation/widgets/profile_header
 import 'package:business_os/features/resume/presentation/widgets/resume_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
+import '../../../auth/presentation/cubit/auth_state.dart';
 import '../../domain/entities/user_profile.dart';
 import '../cubit/profile_cubit.dart';
 import '../cubit/profile_state.dart';
@@ -79,6 +79,8 @@ class ProfileFromState extends State<ProfileFrom> {
   }
 
   Future<void> _confirmSignOut() async {
+    final authCubit = context.read<AuthCubit>();
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {
@@ -109,9 +111,7 @@ class ProfileFromState extends State<ProfileFrom> {
     );
 
     if (confirmed != true || !mounted) return;
-    await context.read<AuthCubit>().signOut();
-    if (!mounted) return;
-    context.go('/auth/login');
+    await authCubit.signOut();
   }
 
   String? _urlValidator(String? value, String label) {
@@ -143,7 +143,11 @@ class ProfileFromState extends State<ProfileFrom> {
       },
       builder: (context, state) {
         if (state.status == ProfileStatus.loading || state.profile == null) {
-          return ResumeLoading();
+          final authState = context.watch<AuthCubit>().state;
+          if (authState.status == AuthStatus.unauthenticated) {
+            return const SizedBox.shrink();
+          }
+          return const ResumeLoading();
         }
 
         final profile = state.profile!;
@@ -282,46 +286,6 @@ class ProfileFromState extends State<ProfileFrom> {
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
-              _SectionLabel(title: 'ACCOUNT'),
-              const SizedBox(height: 8),
-              _SectionCard(
-                children: [
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: CircleAvatar(
-                      backgroundColor: colors.primaryContainer,
-                      child: Icon(
-                        Icons.lock_outline_rounded,
-                        color: colors.onPrimaryContainer,
-                      ),
-                    ),
-                    title: const Text('Password & security'),
-                    subtitle: const Text(
-                      'Manage your account security from authentication settings.',
-                    ),
-                    trailing: const Icon(Icons.chevron_right_rounded),
-                    onTap: () => context.go('/auth/forgot-password'),
-                  ),
-                  const Divider(height: 24),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: CircleAvatar(
-                      backgroundColor: profile.email.isEmpty
-                          ? colors.surfaceContainerHighest
-                          : colors.primaryContainer,
-                      child: Icon(
-                        Icons.verified_outlined,
-                        color: colors.onPrimaryContainer,
-                      ),
-                    ),
-                    title: const Text('Email verification'),
-                    subtitle: Text(
-                      'Verification status is managed by Firebase Authentication.',
-                    ),
-                  ),
-                ],
-              ),
               const SizedBox(height: 28),
               _SectionLabel(title: 'SESSION'),
               const SizedBox(height: 8),
@@ -387,8 +351,7 @@ class _SectionCard extends StatelessWidget {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bg =
-    (isDark ? cs.surfaceContainerHigh : Colors.white);
+    final bg = (isDark ? cs.surfaceContainerHigh : Colors.white);
 
     return Container(
       margin: EdgeInsets.zero,

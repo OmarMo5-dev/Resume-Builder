@@ -117,7 +117,7 @@ class _TemplateCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 220),
-          width: 172,
+          width: 130,
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: selected
@@ -125,7 +125,7 @@ class _TemplateCard extends StatelessWidget {
                 : cs.surfaceContainerHighest.withValues( alpha : .35),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: selected ? cs.primary : cs.outlineVariant,
+              color: selected ? cs.primary.withValues(alpha: 0.12) : cs.outlineVariant.withValues(alpha: 0.12),
               width: selected ? 1.5 : 1,
             ),
           ),
@@ -158,7 +158,7 @@ class _TemplateCard extends StatelessWidget {
               const Spacer(),
               Text(
                 template.name,
-                maxLines: 1,
+                maxLines: 4,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w800,
@@ -167,7 +167,7 @@ class _TemplateCard extends StatelessWidget {
               const SizedBox(height: 3),
               Text(
                 template.description,
-                maxLines: 2,
+                maxLines: 4,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: cs.onSurfaceVariant,

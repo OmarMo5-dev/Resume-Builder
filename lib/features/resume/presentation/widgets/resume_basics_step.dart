@@ -45,7 +45,7 @@ class ResumeBasicsStep extends StatelessWidget {
           decoration: BoxDecoration(
             color: cs.surfaceContainerHighest.withValues( alpha : .35),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: cs.outlineVariant.withValues( alpha : .6)),
+            border: Border.all(color: cs.outlineVariant.withValues( alpha : .12)),
           ),
           child: SwitchListTile.adaptive(
             title: const Text(

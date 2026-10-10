@@ -12,10 +12,7 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<ProfileCubit>()..load(),
-      child: const _ProfileView(),
-    );
+    return const _ProfileView();
   }
 }
 
@@ -46,6 +43,9 @@ class _ProfileViewState extends State<_ProfileView> {
                     backgroundColor: Colors.blue.shade600.withValues(
                       alpha: 0.32,
                     ),
+                    side: BorderSide(
+                      color: Colors.white.withValues(alpha: 0.2)
+                    )
                   ),
                   onPressed: saving
                       ? null

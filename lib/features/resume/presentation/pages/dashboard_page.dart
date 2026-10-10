@@ -82,6 +82,7 @@ class DashboardPage extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          const SizedBox(height: 13),
                           DashboardWelcome(
                             name: user?.displayName ?? user?.email,
                             onCreate: () => _create(context),
@@ -153,7 +154,7 @@ class DashboardPage extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                          const SizedBox(height: 6),
+                          const SizedBox(height: 16),
                           DashboardTipCard(resume: latest),
                         ],
                       ),

@@ -4,12 +4,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final IconData icon;
   final List<Widget>? actions;
+  final void Function()? onTap;
 
   const CustomAppBar({
     super.key,
     required this.title,
     required this.icon,
-    this.actions,
+    this.actions, this.onTap,
   });
 
   @override
@@ -23,17 +24,20 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         automaticallyImplyLeading: false,
         title: Row(
           children: [
-            Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  width: 1,
+            GestureDetector(
+              onTap: onTap,
+              child: Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    width: 1,
+                  ),
                 ),
+                child: Icon(icon, color: Colors.white, size: 18),
               ),
-              child: Icon(icon, color: Colors.white, size: 18),
             ),
             SizedBox(width: 12),
             Text(

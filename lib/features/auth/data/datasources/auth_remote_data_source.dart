@@ -61,10 +61,22 @@ class AuthRemoteDataSource {
     }
   }
 
+
   Future<void> signOut() async {
-    if (!kIsWeb) {
-      await _googleSignIn.signOut();
-    }
+    // 1. Sign out from Firebase first.
     await _firebaseAuth.signOut();
+
+    debugPrint('FIREBASE SIGN OUT: SUCCESS');
+
+    if (!kIsWeb) {
+      try {
+        await _googleSignIn.signOut();
+        debugPrint('GOOGLE SIGN OUT: SUCCESS');
+      } catch (e, stackTrace) {
+        debugPrint('GOOGLE SIGN OUT CLEANUP WARNING: $e');
+        debugPrintStack(stackTrace: stackTrace);
+      }
+    }
   }
+
 }

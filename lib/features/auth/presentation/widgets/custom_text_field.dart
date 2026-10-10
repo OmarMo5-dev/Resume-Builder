@@ -1,21 +1,7 @@
 import 'package:flutter/material.dart';
 
+/// Shared, lightweight text field for authentication screens.
 class CustomTextField extends StatelessWidget {
-  final String labelText;
-  final TextEditingController? controller;
-  final String? Function(String?)? validator;
-
-  final Widget? suffixIcon;
-  final Widget? prefixIcon;
-
-  final void Function(String)? onFieldSubmitted;
-
-  final bool obscureText;
-
-  final TextInputType? keyboardType;
-  final TextInputAction textInputAction;
-  final Iterable<String>? autofillHints;
-
   const CustomTextField({
     super.key,
     required this.labelText,
@@ -30,10 +16,27 @@ class CustomTextField extends StatelessWidget {
     this.autofillHints,
   });
 
+  final String labelText;
+  final TextEditingController? controller;
+  final String? Function(String?)? validator;
+  final Widget? suffixIcon;
+  final Widget? prefixIcon;
+  final void Function(String)? onFieldSubmitted;
+  final bool obscureText;
+  final TextInputType? keyboardType;
+  final TextInputAction textInputAction;
+  final Iterable<String>? autofillHints;
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final colors = Theme.of(context).colorScheme;
+
+    OutlineInputBorder border(Color color, [double width = 1]) {
+      return OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(color: color, width: width),
+      );
+    }
 
     return TextFormField(
       controller: controller,
@@ -43,77 +46,44 @@ class CustomTextField extends StatelessWidget {
       onFieldSubmitted: onFieldSubmitted,
       autofillHints: autofillHints,
       validator: validator,
-
-      // Close keyboard when the user submits the field.
-      onTapOutside: (_) {
-        FocusScope.of(context).unfocus();
-      },
-
+      onTapOutside: (_) => FocusScope.of(context).unfocus(),
       style: TextStyle(
-        fontSize: 15,
+        fontSize: 14,
         fontWeight: FontWeight.w500,
-        color: colorScheme.onSurface,
+        color: colors.onSurface,
       ),
-
-      cursorColor: colorScheme.primary,
-
+      cursorColor: colors.primary,
       decoration: InputDecoration(
         labelText: labelText,
-
         labelStyle: TextStyle(
           fontSize: 14,
-          fontWeight: FontWeight.w500,
-          color: colorScheme.onSurfaceVariant,
+          color: colors.onSurfaceVariant,
+          fontWeight: FontWeight.w400,
         ),
-
         floatingLabelStyle: TextStyle(
-          fontSize: 14,
+          color: colors.primary,
+          fontSize: 12,
           fontWeight: FontWeight.w600,
-          color: colorScheme.primary,
         ),
-
-        prefixIcon: prefixIcon,
-
+        prefixIcon: prefixIcon == null
+            ? null
+            : IconTheme(
+                data: IconThemeData(color: colors.onSurfaceVariant, size: 20),
+                child: prefixIcon!,
+              ),
         suffixIcon: suffixIcon,
-
         filled: true,
-        fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
-
+        fillColor: colors.surface,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
-          vertical: 16,
+          vertical: 17,
         ),
-
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: colorScheme.outlineVariant, width: 1),
-        ),
-
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: colorScheme.outlineVariant, width: 1),
-        ),
-
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: colorScheme.primary, width: 1.5),
-        ),
-
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: colorScheme.error, width: 1),
-        ),
-
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: colorScheme.error, width: 1.5),
-        ),
-
-        errorStyle: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          color: colorScheme.error,
-        ),
+        border: border(colors.outlineVariant.withValues(alpha: 0.01)),
+        enabledBorder: border(colors.outlineVariant),
+        focusedBorder: border(colors.primary, 1.3),
+        errorBorder: border(colors.error),
+        focusedErrorBorder: border(colors.error, 1.3),
+        errorStyle: TextStyle(color: colors.error, fontSize: 11.5, height: 1.2),
       ),
     );
   }

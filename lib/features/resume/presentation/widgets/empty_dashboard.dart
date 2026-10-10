@@ -10,19 +10,23 @@ class EmptyDashboard extends StatelessWidget {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
 
-    return Card(
+    return Container(
       margin: EdgeInsets.zero,
-      elevation: 0,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(22),
+        color:  cs.onPrimary.withValues(alpha: 0.1),
+        border: Border.all(color: Colors.grey.withValues(alpha: .12))
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Row(
           children: [
             Container(
-              width: 52,
-              height: 52,
+              width: 45,
+              height: 45,
               decoration: BoxDecoration(
-                color: cs.primaryContainer,
-                borderRadius: BorderRadius.circular(16),
+                color: cs.primaryContainer.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(17),
               ),
               child: Icon(Icons.auto_awesome, color: cs.primary),
             ),
@@ -34,7 +38,7 @@ class EmptyDashboard extends StatelessWidget {
                   Text(
                     'Your workspace is ready',
                     style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                   const SizedBox(height: 4),

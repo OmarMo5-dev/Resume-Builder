@@ -28,9 +28,8 @@ class EditorBottomBar extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: cs.surface,
         border: Border(
-          top: BorderSide(color: cs.outlineVariant.withValues( alpha : .4), width: .5),
+          top: BorderSide(color: cs.outlineVariant.withValues( alpha : .2), width: .5),
         ),
       ),
       child: SafeArea(
@@ -47,6 +46,7 @@ class EditorBottomBar extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
+                  side: BorderSide(color: cs.outlineVariant.withValues( alpha : .12))
                 ),
                 child: const Icon(Icons.arrow_back_rounded, size: 19),
               ),
@@ -60,6 +60,7 @@ class EditorBottomBar extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
+                side: BorderSide(color: cs.outlineVariant.withValues( alpha : .12))
               ),
               icon: const Icon(Icons.save_outlined, size: 20),
             ),

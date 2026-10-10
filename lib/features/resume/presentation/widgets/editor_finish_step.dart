@@ -41,7 +41,7 @@ class EditorFinishStep extends StatelessWidget {
               ],
             ),
             child: Icon(
-              Icons.celebration_rounded,
+              Icons.check_circle_outline,
               size: 40,
               color: cs.onPrimary,
             ),
@@ -85,23 +85,6 @@ class EditorFinishStep extends StatelessWidget {
           subtitle: 'Send your resume to anyone',
           onTap: onShare,
         ),
-        const SizedBox(height: 28),
-        SizedBox(
-          height: 52,
-          child: FilledButton.icon(
-            onPressed: onComplete,
-            style: FilledButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
-            ),
-            icon: const Icon(Icons.check_circle_outline, size: 20),
-            label: const Text(
-              'Mark as Complete',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-          ),
-        ),
       ],
     );
   }
@@ -126,7 +109,7 @@ class _Action extends StatelessWidget {
     final cs = theme.colorScheme;
 
     return Material(
-      color: cs.surfaceContainerHighest.withValues(alpha: .35),
+      color: cs.surfaceContainerHighest.withValues(alpha: .12),
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         onTap: onTap,
@@ -135,14 +118,14 @@ class _Action extends StatelessWidget {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: cs.outlineVariant.withValues(alpha: .4)),
+            border: Border.all(color: cs.outlineVariant.withValues(alpha: .12)),
           ),
           child: Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: cs.primaryContainer,
+                  color: cs.primaryContainer.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: cs.primary, size: 20),

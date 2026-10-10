@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -136,28 +137,27 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  Future<void> signOut() async {
-    if (isClosed) return;
-    emit(state.copyWith(status: AuthStatus.authLoading, clearMessage: true));
+  Future<bool> signOut() async {
+    if (isClosed) return false;
+
+    debugPrint('SIGN OUT: started');
 
     try {
       await _signOut();
-      if (isClosed) return;
-      emit(const AuthState(status: AuthStatus.unauthenticated));
-    } on FirebaseAuthException catch (e) {
-      if (isClosed) return;
-      emit(
-        state.copyWith(
-          status: AuthStatus.failure,
-          message: e.message ?? e.code,
-        ),
-      );
-    } catch (e) {
-      if (isClosed) return;
-      emit(state.copyWith(status: AuthStatus.failure, message: e.toString()));
+
+      final user = FirebaseAuth.instance.currentUser;
+
+      debugPrint('SIGN OUT: completed');
+      debugPrint('FIREBASE USER AFTER SIGN OUT: ${user?.uid}');
+
+      return user == null;
+    } catch (e, stackTrace) {
+      debugPrint('SIGN OUT ERROR: $e');
+      debugPrintStack(stackTrace: stackTrace);
+
+      return false;
     }
   }
-
 
   @override
   Future<void> close() async {

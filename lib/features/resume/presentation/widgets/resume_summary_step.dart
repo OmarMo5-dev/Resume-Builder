@@ -30,7 +30,7 @@ class ResumeSummaryStep extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(13),
           decoration: BoxDecoration(
-            color: cs.primaryContainer.withValues( alpha : .35),
+              color: cs.primaryContainer.withValues( alpha : .12),
             borderRadius: BorderRadius.circular(14),
           ),
           child: Row(

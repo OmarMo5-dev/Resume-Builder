@@ -33,15 +33,17 @@ class EditorListSection<T> extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: cs.outlineVariant.withValues( alpha : .5)),
-              color: cs.surfaceContainerHighest.withValues( alpha : .25),
+              border: Border.all(
+                color: cs.outlineVariant.withValues(alpha: .12),
+              ),
+              color: cs.surfaceContainerHighest.withValues(alpha: .2),
             ),
             child: Column(
               children: [
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: cs.primaryContainer.withValues( alpha : .45),
+                    color: cs.primaryContainer.withValues(alpha: .2),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(emptyIcon, color: cs.primary, size: 26),
@@ -59,7 +61,7 @@ class EditorListSection<T> extends StatelessWidget {
                 Text(
                   'Add your first entry below',
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: cs.onSurfaceVariant.withValues( alpha : .7),
+                    color: cs.onSurfaceVariant.withValues(alpha: .7),
                   ),
                 ),
               ],
@@ -78,7 +80,7 @@ class EditorListSection<T> extends StatelessWidget {
               ),
             ),
           ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         OutlinedButton.icon(
           onPressed: onAdd,
           style: OutlinedButton.styleFrom(
@@ -86,6 +88,7 @@ class EditorListSection<T> extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
             ),
+            side: BorderSide(color: cs.outlineVariant.withValues(alpha: .12)),
           ),
           icon: const Icon(Icons.add_rounded, size: 20),
           label: const Text(
@@ -117,7 +120,7 @@ class _EditorItemCard extends StatelessWidget {
     final cs = theme.colorScheme;
 
     return Material(
-      color: cs.surfaceContainerHighest.withValues( alpha : .35),
+      color: cs.surfaceContainerHighest.withValues(alpha: .35),
       borderRadius: BorderRadius.circular(14),
       child: InkWell(
         onTap: onTap,
@@ -126,7 +129,7 @@ class _EditorItemCard extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(14, 12, 6, 12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: cs.outlineVariant.withValues( alpha : .4)),
+            border: Border.all(color: cs.outlineVariant.withValues(alpha: .4)),
           ),
           child: Row(
             children: [
