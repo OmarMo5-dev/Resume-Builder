@@ -154,7 +154,7 @@ class DashboardPage extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 22),
                           DashboardTipCard(resume: latest),
                         ],
                       ),

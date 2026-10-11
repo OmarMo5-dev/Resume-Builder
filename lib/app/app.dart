@@ -1,39 +1,47 @@
 import 'package:flutter/material.dart';
 
-// import 'package:flutter_localizations/flutter_localizations.dart';
-//
-// import '../core/localization/app_localizations.dart';
 import '../core/theme/app_dark_theme.dart';
 import '../core/theme/app_theme.dart';
+import '../features/settings/presentation/controllers/theme_controller.dart';
 import 'router/app_router.dart';
 
-class ResumeBuilderApp extends StatelessWidget {
+class ResumeBuilderApp extends StatefulWidget {
   const ResumeBuilderApp({super.key});
+
+  @override
+  State<ResumeBuilderApp> createState() => _ResumeBuilderAppState();
+}
+
+class _ResumeBuilderAppState extends State<ResumeBuilderApp> {
+  final ThemeController _themeController = ThemeController.instance;
+  late final _router = createAppRouter();
+
+  @override
+  void initState() {
+    super.initState();
+    _themeController.addListener(_handleThemeChanged);
+  }
+
+  @override
+  void dispose() {
+    _themeController.removeListener(_handleThemeChanged);
+    super.dispose();
+  }
+
+  void _handleThemeChanged() {
+    if (mounted) setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-
       title: 'Resume AI',
-
-      // locale: const Locale('ar'),
       theme: AppTheme.light,
       darkTheme: AppDarkTheme.dark,
-      themeMode: ThemeMode.system,
-
-      // localizationsDelegates: const [
-      //   AppLocalizations.delegate,
-      //   GlobalMaterialLocalizations.delegate,
-      //   GlobalWidgetsLocalizations.delegate,
-      //   GlobalCupertinoLocalizations.delegate,
-      // ],
-      //
-      // supportedLocales: const [
-      //   Locale('ar'),
-      //   Locale('en'),
-      // ],
-      routerConfig: createAppRouter(),
+      // Light is the product default; System is applied only when selected.
+      themeMode: _themeController.themeMode,
+      routerConfig: _router,
     );
   }
 }

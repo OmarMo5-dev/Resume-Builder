@@ -13,6 +13,7 @@ import '../../features/resume/domain/entities/resume.dart';
 import '../../features/resume/presentation/pages/public_resume_page.dart';
 import '../../features/resume/presentation/pages/resume_editor_page.dart';
 import '../../features/resume/presentation/pages/resume_preview_page.dart';
+import '../../features/settings/presentation/pages/settings_page.dart';
 import '../root.dart';
 
 GoRouter createAppRouter() {
@@ -90,6 +91,13 @@ GoRouter createAppRouter() {
             AppPageTransition.slide(
               child: const Root(initialIndex: 1),
             ),
+      ),
+
+      GoRoute(
+        path: '/settings',
+        pageBuilder: (context, state) => AppPageTransition.slide(
+          child: const SettingsPage(),
+        ),
       ),
 
       GoRoute(

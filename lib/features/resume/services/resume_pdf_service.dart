@@ -110,8 +110,6 @@ class ResumePdfService {
     }
   }
 
-
-
   /// Opens the system print / save-as-PDF dialog with the generated document.
   static Future<void> export(Resume resume) async {
     final bytes = await build(resume);
@@ -339,7 +337,7 @@ class _ResumeBody {
     for (final e in resume.skills) {
       skills.addAll(_skillGroup(e));
     }
-    out.addAll(_section('TECHNICAL SKILLS', skills));
+    out.addAll(_section('SKILLS', skills));
 
     final courses = <pw.Widget>[];
     for (final e in resume.courses) {
@@ -387,27 +385,33 @@ class _ResumeBody {
     final p = resume.personalInfo;
     final list = <_Contact>[];
     final email = ResumeText.clean(p.email);
-    if (email.isNotEmpty)
+    if (email.isNotEmpty) {
       list.add(_Contact(_IconKind.email, email, ResumeLinks.normalize(email)));
+    }
     final phone = ResumeText.clean(p.phone);
-    if (phone.isNotEmpty)
+    if (phone.isNotEmpty) {
       list.add(_Contact(_IconKind.phone, phone, ResumeLinks.phone(phone)));
+    }
     final location = ResumeText.clean(p.location);
-    if (location.isNotEmpty)
+    if (location.isNotEmpty) {
       list.add(_Contact(_IconKind.location, location, null));
+    }
     final linkedin = ResumeLinks.normalize(p.linkedin);
-    if (linkedin != null)
+    if (linkedin != null) {
       list.add(
         _Contact(_IconKind.linkedin, ResumeLinks.display(linkedin), linkedin),
       );
+    }
     final github = ResumeLinks.normalize(p.github);
-    if (github != null)
+    if (github != null) {
       list.add(_Contact(_IconKind.github, ResumeLinks.display(github), github));
+    }
     final website = ResumeLinks.normalize(p.website);
-    if (website != null)
+    if (website != null) {
       list.add(
         _Contact(_IconKind.website, ResumeLinks.display(website), website),
       );
+    }
     return list;
   }
 
@@ -570,8 +574,6 @@ class _ResumeBody {
 
   // ---- sections -------------------------------------------------------------
 
-  /// Returns no widgets for an empty body. The heading is grouped with the
-  /// first body widget so a heading is never stranded at the bottom of a page.
   List<pw.Widget> _section(String title, List<pw.Widget> body) {
     if (body.isEmpty) return const <pw.Widget>[];
     final heading = _sectionHeading(title);
@@ -726,6 +728,7 @@ class _ResumeBody {
       child: pw.Row(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
+
           pw.Text(
             '$label: ',
             style: pw.TextStyle(
@@ -756,8 +759,9 @@ class _ResumeBody {
     final location = ResumeText.clean(e.location);
     final dates = ResumeText.dateRange(e.startDate, e.endDate, e.isCurrent);
     final bullets = ResumeText.cleanList(e.description);
-    if (position.isEmpty && company.isEmpty && bullets.isEmpty)
+    if (position.isEmpty && company.isEmpty && bullets.isEmpty) {
       return const <pw.Widget>[];
+    }
 
     return <pw.Widget>[
       _entryHeader(position, [
@@ -815,8 +819,9 @@ class _ResumeBody {
     final date = ResumeText.clean(e.date);
     final lines = ResumeText.lines(e.description);
     final hasUrl = ResumeLinks.normalize(e.credentialUrl) != null;
-    if (name.isEmpty && provider.isEmpty && lines.isEmpty && !hasUrl)
+    if (name.isEmpty && provider.isEmpty && lines.isEmpty && !hasUrl) {
       return const <pw.Widget>[];
+    }
     return <pw.Widget>[
       _entryHeader(name, [
         if (provider.isNotEmpty)
@@ -835,8 +840,9 @@ class _ResumeBody {
     final location = ResumeText.clean(e.location);
     final dates = ResumeText.dateRange(e.startDate, e.endDate, e.isCurrent);
     final lines = ResumeText.lines(e.description);
-    if (degree.isEmpty && institution.isEmpty && lines.isEmpty)
+    if (degree.isEmpty && institution.isEmpty && lines.isEmpty) {
       return const <pw.Widget>[];
+    }
     return <pw.Widget>[
       _entryHeader(degree, [
         if (institution.isNotEmpty)
@@ -859,10 +865,6 @@ class _ResumeBody {
     ];
   }
 }
-
-// -----------------------------------------------------------------------------
-// Vector icons - drawn with PDF primitives (no fonts, images, SVG or network).
-// -----------------------------------------------------------------------------
 
 class _PdfIcon {
   const _PdfIcon._();

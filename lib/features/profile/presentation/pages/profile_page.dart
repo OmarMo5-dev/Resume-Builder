@@ -2,6 +2,7 @@ import 'package:business_os/features/profile/presentation/widgets/profile_from.d
 import 'package:business_os/shared/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../app/di/injection_container.dart';
 import '../cubit/profile_cubit.dart';
@@ -33,6 +34,11 @@ class _ProfileViewState extends State<_ProfileView> {
         title: "Profile",
         icon: Icons.person_2_outlined,
         actions: [
+          // IconButton(
+          //   tooltip: 'Settings',
+          //   icon: const Icon(Icons.settings_outlined),
+          //   onPressed: () => context.push('/settings'),
+          // ),
           BlocBuilder<ProfileCubit, ProfileState>(
             builder: (context, state) {
               final saving = state.status == ProfileStatus.saving;

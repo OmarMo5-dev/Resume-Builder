@@ -3,19 +3,33 @@ import 'package:flutter/material.dart';
 class EmptyDashboard extends StatelessWidget {
   final VoidCallback onCreate;
 
-  const EmptyDashboard({required this.onCreate});
+  const EmptyDashboard({super.key, required this.onCreate});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
 
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final bg =
+    (isDark ? cs.surfaceContainerHigh : Colors.white);
+
     return Container(
       margin: EdgeInsets.zero,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(22),
-        color:  cs.onPrimary.withValues(alpha: 0.1),
-        border: Border.all(color: Colors.grey.withValues(alpha: .12))
+          color: bg,
+        border: Border.all(color: Colors.grey.withValues(alpha: .12)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12.withValues(alpha: isDark ? 0.35 : 0.1),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+
       ),
       child: Padding(
         padding: const EdgeInsets.all(20),

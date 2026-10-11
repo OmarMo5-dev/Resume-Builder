@@ -1,3 +1,4 @@
+import 'package:business_os/features/settings/presentation/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../app/di/injection_container.dart';
@@ -26,19 +27,19 @@ class _RootState extends State<Root> {
       icon: Icons.dashboard_customize_outlined,
       activeIcon: Icons.dashboard_customize,
     ),
-    // RootNavItem(
-    //   label: 'Resumes',
-    //   icon: Icons.file_copy_outlined,
-    //   activeIcon: Icons.file_copy_rounded,
-    // ),
     RootNavItem(
       label: 'Profile',
       icon: Icons.person_outline_rounded,
       activeIcon: Icons.person_rounded,
     ),
+    RootNavItem(
+      label: 'Settings',
+      icon: Icons.settings_outlined,
+      activeIcon: Icons.settings,
+    ),
   ];
 
-  static const List<Widget> _pages = [_DashboardTab(), _ProfileTab()];
+  static const List<Widget> _pages = [_DashboardTab(), _ProfileTab() , _SettingsTab()];
 
   @override
   void initState() {
@@ -89,5 +90,14 @@ class _ProfileTab extends StatelessWidget {
       ],
       child: ProfilePage(),
     );
+  }
+}
+
+class _SettingsTab extends StatelessWidget {
+  const _SettingsTab();
+
+  @override
+  Widget build(BuildContext context) {
+    return const SettingsPage();
   }
 }
