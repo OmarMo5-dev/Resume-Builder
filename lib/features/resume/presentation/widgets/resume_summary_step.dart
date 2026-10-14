@@ -22,7 +22,7 @@ class ResumeSummaryStep extends StatelessWidget {
           multiline: true,
           textCapitalization: TextCapitalization.sentences,
           hintText:
-              'Example: Flutter developer focused on clean, maintainable mobile apps...',
+              'Example: A detail-oriented professional with experience in communication, problem-solving, and delivering quality work...',
           helperText: 'Aim for 2–4 concise sentences.',
           onChanged: context.read<ResumeEditorCubit>().setSummary,
         ),

@@ -193,15 +193,15 @@ class _Style {
           accent: const PdfColor.fromInt(0xFF1F4E79),
           link: _link,
           rule: const PdfColor.fromInt(0xFFC9D1DC),
-          margin: 40,
-          nameSize: 24,
-          titleSize: 11.5,
-          sectionSize: 10.5,
-          headingSize: 10,
-          bodySize: 9,
-          metaSize: 8.5,
-          sectionGap: 16,
-          entryGap: 9,
+          margin: 30,
+          nameSize: 22,
+          titleSize: 10.5,
+          sectionSize: 9.8,
+          headingSize: 9.5,
+          bodySize: 8.8,
+          metaSize: 8,
+          sectionGap: 9,
+          entryGap: 5,
         );
       case 'minimal_01':
         return _Style(
@@ -218,15 +218,15 @@ class _Style {
           accent: PdfColors.grey800,
           link: _link,
           rule: PdfColors.grey400,
-          margin: 50,
-          nameSize: 20,
-          titleSize: 10.5,
-          sectionSize: 9,
-          headingSize: 9.5,
-          bodySize: 8.8,
-          metaSize: 8.3,
-          sectionGap: 18,
-          entryGap: 10,
+          margin: 30,
+          nameSize: 19,
+          titleSize: 9.8,
+          sectionSize: 8.8,
+          headingSize: 9,
+          bodySize: 8.5,
+          metaSize: 7.8,
+          sectionGap: 9,
+          entryGap: 5,
         );
       default:
         return _Style(
@@ -243,15 +243,15 @@ class _Style {
           accent: PdfColors.black,
           link: _link,
           rule: PdfColors.grey700,
-          margin: 44,
-          nameSize: 24,
-          titleSize: 12,
-          sectionSize: 11,
-          headingSize: 10.5,
-          bodySize: 10,
-          metaSize: 9.5,
-          sectionGap: 14,
-          entryGap: 8,
+          margin: 30,
+          nameSize: 22,
+          titleSize: 10.5,
+          sectionSize: 10,
+          headingSize: 9.5,
+          bodySize: 9,
+          metaSize: 8.2,
+          sectionGap: 9,
+          entryGap: 5,
         );
     }
   }
@@ -284,14 +284,20 @@ class _Style {
   }
 }
 
-enum _IconKind { email, phone, location, website, linkedin, github }
+enum _IconKind { email, phone, location, website, linkedin, github, link }
 
 class _Contact {
   final _IconKind icon;
   final String label;
   final String? destination;
+  final bool iconOnly;
 
-  const _Contact(this.icon, this.label, this.destination);
+  const _Contact(
+    this.icon,
+    this.label,
+    this.destination, {
+    this.iconOnly = false,
+  });
 }
 
 // -----------------------------------------------------------------------------
@@ -331,7 +337,7 @@ class _ResumeBody {
     for (final e in resume.projects) {
       projects.addAll(_project(e));
     }
-    out.addAll(_section('PROJECTS', projects));
+    out.addAll(_section('SELECTED WORK / PROJECTS', projects));
 
     final skills = <pw.Widget>[];
     for (final e in resume.skills) {
@@ -399,23 +405,40 @@ class _ResumeBody {
     final linkedin = ResumeLinks.normalize(p.linkedin);
     if (linkedin != null) {
       list.add(
-        _Contact(_IconKind.linkedin, ResumeLinks.display(linkedin), linkedin),
+        _Contact(_IconKind.linkedin, 'LinkedIn', linkedin, iconOnly: true),
       );
     }
     final github = ResumeLinks.normalize(p.github);
     if (github != null) {
-      list.add(_Contact(_IconKind.github, ResumeLinks.display(github), github));
+      list.add(_Contact(_IconKind.github, 'GitHub', github, iconOnly: true));
     }
     final website = ResumeLinks.normalize(p.website);
     if (website != null) {
-      list.add(
-        _Contact(_IconKind.website, ResumeLinks.display(website), website),
-      );
+      list.add(_Contact(_IconKind.website, 'Website', website, iconOnly: true));
+    }
+    for (final link in p.socialLinks) {
+      final url = ResumeLinks.normalize(link.url);
+      if (url == null || link.platform.trim().isEmpty) continue;
+      final platform = link.platform.toLowerCase();
+      final kind = platform.contains('github')
+          ? _IconKind.github
+          : platform.contains('linkedin')
+          ? _IconKind.linkedin
+          : platform.contains('website') || platform.contains('portfolio')
+          ? _IconKind.website
+          : _IconKind.link;
+      list.add(_Contact(kind, link.platform.trim(), url, iconOnly: true));
     }
     return list;
   }
 
   pw.Widget _contactWidget(_Contact c) {
+    if (c.iconOnly && c.destination != null) {
+      return pw.UrlLink(
+        destination: c.destination!,
+        child: _PdfIcon.build(c.icon, 11, s.accent),
+      );
+    }
     final text = pw.Text(
       c.label,
       style: c.destination == null
@@ -720,38 +743,17 @@ class _ResumeBody {
     ),
   );
 
-  pw.Widget _linkLine(String label, String? raw) {
+  pw.Widget _linkIcon(String? raw, _IconKind kind) {
     final url = ResumeLinks.normalize(raw);
     if (url == null) return pw.SizedBox();
     return pw.Padding(
-      padding: const pw.EdgeInsets.only(top: 3),
-      child: pw.Row(
-        crossAxisAlignment: pw.CrossAxisAlignment.start,
-        children: [
-
-          pw.Text(
-            '$label: ',
-            style: pw.TextStyle(
-              fontSize: s.metaSize,
-              color: s.ink,
-              fontWeight: pw.FontWeight.bold,
-            ),
-          ),
-          pw.Expanded(
-            child: pw.UrlLink(
-              destination: url,
-              child: pw.Text(
-                ResumeLinks.display(url),
-                style: _linkStyle(s.metaSize),
-              ),
-            ),
-          ),
-        ],
+      padding: const pw.EdgeInsets.only(top: 3, right: 5),
+      child: pw.UrlLink(
+        destination: url,
+        child: _PdfIcon.build(kind, 10, s.link),
       ),
     );
   }
-
-  pw.Widget _gap() => pw.SizedBox(height: s.entryGap);
 
   List<pw.Widget> _experience(Experience e) {
     final position = ResumeText.clean(e.position);
@@ -793,10 +795,16 @@ class _ResumeBody {
       _entryHeader(name, [if (role.isNotEmpty) _lineText(role)]),
       if (bullets.isNotEmpty) pw.SizedBox(height: 3),
       for (final b in bullets) _bullet(b),
-      if (tech.isNotEmpty) _label('Technologies:'),
+      if (tech.isNotEmpty) _label('Tools / Methods:'),
       for (final t in tech) _bullet(t),
-      if (hasGithub) _linkLine('GitHub', e.githubUrl),
-      if (hasLive) _linkLine('Live Demo', e.liveUrl),
+      if (hasGithub || hasLive)
+        pw.Row(
+          mainAxisSize: pw.MainAxisSize.min,
+          children: [
+            if (hasGithub) _linkIcon(e.githubUrl, _IconKind.github),
+            if (hasLive) _linkIcon(e.liveUrl, _IconKind.website),
+          ],
+        ),
       _gap(),
     ];
   }
@@ -829,7 +837,7 @@ class _ResumeBody {
         if (date.isNotEmpty) _lineText(date),
       ]),
       for (final l in lines) _bullet(l),
-      if (hasUrl) _linkLine('Credential', e.credentialUrl),
+      if (hasUrl) _linkIcon(e.credentialUrl, _IconKind.link),
       _gap(),
     ];
   }
@@ -864,6 +872,8 @@ class _ResumeBody {
       pw.SizedBox(height: s.entryGap - 2),
     ];
   }
+
+  pw.Widget _gap() => pw.SizedBox(height: s.entryGap);
 }
 
 class _PdfIcon {
@@ -879,6 +889,7 @@ class _PdfIcon {
       case _IconKind.phone:
       case _IconKind.location:
       case _IconKind.website:
+      case _IconKind.link:
         return pw.SizedBox(
           width: size,
           height: size,
@@ -954,6 +965,7 @@ class _PdfIcon {
           ..drawEllipse(s / 2, s * 0.62, s * 0.1, s * 0.1)
           ..fillPath();
       case _IconKind.website:
+      case _IconKind.link:
         c
           ..drawEllipse(s / 2, s / 2, s * 0.45, s * 0.45)
           ..strokePath()

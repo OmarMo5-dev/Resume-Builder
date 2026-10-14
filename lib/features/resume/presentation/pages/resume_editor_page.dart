@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../app/di/injection_container.dart';
 import '../../domain/entities/personal_info.dart';
+import '../../domain/entities/resume_social_link.dart';
 import '../../domain/entities/resume.dart';
 import '../../domain/usecases/create_resume.dart';
 import '../../domain/usecases/update_resume.dart';
@@ -11,7 +12,6 @@ import '../../services/resume_pdf_service.dart';
 import '../cubit/resume_editor_cubit.dart';
 import '../cubit/resume_editor_state.dart';
 import '../widgets/editor_bottom_bar.dart';
-import '../widgets/editor_hero.dart';
 import '../widgets/editor_progress_header.dart';
 import '../widgets/resume_editor_step_content.dart';
 
@@ -53,6 +53,7 @@ class _ResumeEditorViewState extends State<_ResumeEditorView> {
   late final TextEditingController _github;
   late final TextEditingController _website;
   late final TextEditingController _summary;
+  late List<ResumeSocialLink> _socialLinks;
 
   bool _pdfBusy = false;
   int _currentStep = 0;
@@ -65,7 +66,7 @@ class _ResumeEditorViewState extends State<_ResumeEditorView> {
     EditorStepInfo(label: 'Summary', icon: Icons.notes_rounded),
     EditorStepInfo(label: 'Experience', icon: Icons.work_outline_rounded),
     EditorStepInfo(label: 'Education', icon: Icons.school_outlined),
-    EditorStepInfo(label: 'Projects', icon: Icons.folder_outlined),
+    EditorStepInfo(label: 'Selected Work', icon: Icons.folder_outlined),
     EditorStepInfo(label: 'Skills', icon: Icons.auto_awesome_outlined),
     EditorStepInfo(label: 'More', icon: Icons.add_circle_outline_rounded),
     EditorStepInfo(label: 'Finish', icon: Icons.check_circle_outline_rounded),
@@ -87,6 +88,7 @@ class _ResumeEditorViewState extends State<_ResumeEditorView> {
     _github = TextEditingController(text: p.github ?? '');
     _website = TextEditingController(text: p.website ?? '');
     _summary = TextEditingController(text: r.summary);
+    _socialLinks = List<ResumeSocialLink>.from(p.socialLinks);
   }
 
   @override
@@ -121,6 +123,7 @@ class _ResumeEditorViewState extends State<_ResumeEditorView> {
         linkedin: _nullIfBlank(_linkedin.text),
         github: _nullIfBlank(_github.text),
         website: _nullIfBlank(_website.text),
+        socialLinks: List<ResumeSocialLink>.unmodifiable(_socialLinks),
       ),
     );
   }
@@ -248,8 +251,6 @@ class _ResumeEditorViewState extends State<_ResumeEditorView> {
 
 
   bool _isCurrentStepComplete() {
-    final resume = cubit.state.resume;
-
     switch (_currentStep) {
       case 0: // Basics
         return _title.text.trim().isNotEmpty;
@@ -264,27 +265,12 @@ class _ResumeEditorViewState extends State<_ResumeEditorView> {
             RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
                 .hasMatch(email);
 
-      case 2: // Summary
-        return _summary.text.trim().isNotEmpty;
-
-      case 3: // Experience
-        return resume.experience.isNotEmpty;
-
-      case 4: // Education
-        return resume.education.isNotEmpty;
-
-      case 5: // Projects
-        return resume.projects.isNotEmpty;
-
-      case 6: // Skills
-        return resume.skills.any(
-              (group) =>
-          group.category.trim().isNotEmpty &&
-              group.items.any((skill) => skill.trim().isNotEmpty),
-        );
-
-      case 7: // More
-      // Courses and languages are optional.
+      case 2: // Summary is optional for every profession.
+      case 3: // Experience can be omitted by students or career changers.
+      case 4: // Education can be omitted when it is not relevant.
+      case 5: // Selected work/projects are profession-dependent.
+      case 6: // Skills are optional while drafting; users can add them later.
+      case 7: // Courses and languages are optional.
         return true;
 
       default:
@@ -368,15 +354,6 @@ class _ResumeEditorViewState extends State<_ResumeEditorView> {
                   onStepTap: _goToStep,
                 ),
                 SizedBox(height: 10,),
-                BlocBuilder<ResumeEditorCubit, ResumeEditorState>(
-                  builder: (context, state) {
-                    if (_currentStep != 0) {
-                      return const SizedBox.shrink();
-                    }
-
-                    return EditorHero(resume: state.resume, dirty: state.dirty);
-                  },
-                ),
                 Expanded(
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 280),
@@ -414,6 +391,11 @@ class _ResumeEditorViewState extends State<_ResumeEditorView> {
                         githubController: _github,
                         websiteController: _website,
                         summaryController: _summary,
+                        socialLinks: _socialLinks,
+                        onSocialLinksChanged: (links) {
+                          setState(() => _socialLinks = List<ResumeSocialLink>.from(links));
+                          _pushPersonal();
+                        },
                         onPersonalChanged: _pushPersonal,
                       ),
                     ),

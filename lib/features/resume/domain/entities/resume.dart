@@ -100,6 +100,7 @@ class Resume {
         changed(p.linkedin, b?.linkedin) ||
         changed(p.github, b?.github) ||
         changed(p.website, b?.website) ||
+        p.socialLinks.any((link) => link.platform.trim().isNotEmpty && link.url.trim().isNotEmpty && (b == null || !b.socialLinks.any((original) => original.id == link.id && original.platform.trim() == link.platform.trim() && original.url.trim() == link.url.trim()))) ||
         summary.trim().isNotEmpty) {
       return true;
     }

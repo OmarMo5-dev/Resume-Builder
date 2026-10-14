@@ -1,3 +1,5 @@
+import 'resume_social_link.dart';
+
 class PersonalInfo {
   final String fullName;
   final String jobTitle;
@@ -7,6 +9,9 @@ class PersonalInfo {
   final String? linkedin;
   final String? github;
   final String? website;
+  /// Additional optional links for professions that use other platforms.
+  /// Existing LinkedIn/GitHub/website fields remain for backwards compatibility.
+  final List<ResumeSocialLink> socialLinks;
 
   const PersonalInfo({
     required this.fullName,
@@ -17,5 +22,6 @@ class PersonalInfo {
     this.linkedin,
     this.github,
     this.website,
+    this.socialLinks = const [],
   });
 }

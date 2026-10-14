@@ -31,7 +31,7 @@ class ResumeBasicsStep extends StatelessWidget {
           textCapitalization: TextCapitalization.words,
           textInputAction: TextInputAction.next,
           required: true,
-          hintText: 'e.g. Flutter Developer Resume',
+          hintText: 'e.g. Marketing CV, Translator CV, Accountant CV',
           helperText: 'This name is only for organizing your resumes.',
           onChanged: cubit.setTitle,
         ),

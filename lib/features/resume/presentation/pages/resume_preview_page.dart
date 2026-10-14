@@ -139,9 +139,9 @@ class _ResumeSheet extends StatelessWidget {
           if (experience.isNotEmpty)
             _Section(title: 'PROFESSIONAL EXPERIENCE', children: experience),
           if (projects.isNotEmpty)
-            _Section(title: 'PROJECTS', children: projects),
+            _Section(title: 'SELECTED WORK / PROJECTS', children: projects),
           if (skills.isNotEmpty)
-            _Section(title: 'TECHNICAL SKILLS', children: skills),
+            _Section(title: 'SKILLS', children: skills),
           if (courses.isNotEmpty)
             _Section(title: 'COURSES & CERTIFICATIONS', children: courses),
           if (education.isNotEmpty)
@@ -197,14 +197,20 @@ class _ResumeSheet extends StatelessWidget {
             const Padding(
               padding: EdgeInsets.only(top: 6),
               child: Text(
-                'Technologies:',
+                'Tools / Methods:',
                 style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
               ),
             ),
             for (final t in tech) _Bullet(t),
           ],
-          if (github != null) _LinkRow(label: 'GitHub', url: github),
-          if (live != null) _LinkRow(label: 'Live Demo', url: live),
+          if (github != null || live != null)
+            Wrap(
+              spacing: 5,
+              children: [
+                if (github != null) _IconLink(icon: Icons.code_rounded, tooltip: 'GitHub', url: github),
+                if (live != null) _IconLink(icon: Icons.open_in_new_rounded, tooltip: 'Work sample', url: live),
+              ],
+            ),
         ],
       ),
     ];
@@ -235,7 +241,7 @@ class _ResumeSheet extends StatelessWidget {
           if (date.isNotEmpty) _Line(date),
         ],
         bullets: lines,
-        extra: [if (url != null) _LinkRow(label: 'Credential', url: url)],
+        extra: [if (url != null) _IconLink(icon: Icons.link_rounded, tooltip: 'Credential', url: url)],
       ),
     ];
   }
@@ -275,6 +281,16 @@ class _ResumeSheet extends StatelessWidget {
   }
 }
 
+IconData _socialIcon(String platform) {
+  final value = platform.toLowerCase();
+  if (value.contains('github')) return Icons.code_rounded;
+  if (value.contains('linkedin')) return Icons.business_center_outlined;
+  if (value.contains('research')) return Icons.science_outlined;
+  if (value.contains('behance') || value.contains('design')) return Icons.palette_outlined;
+  if (value.contains('youtube') || value.contains('video')) return Icons.play_circle_outline;
+  return Icons.link_rounded;
+}
+
 class _Header extends StatelessWidget {
   final PersonalInfo info;
 
@@ -308,23 +324,19 @@ class _Header extends StatelessWidget {
       if (location.isNotEmpty)
         _Contact(icon: Icons.place_outlined, text: location),
       if (linkedin != null)
-        _Contact(
-          icon: Icons.business_center_outlined,
-          text: ResumeLinks.display(linkedin),
-          url: linkedin,
-        ),
+        _Contact(icon: Icons.business_center_outlined, text: 'LinkedIn', url: linkedin, iconOnly: true),
       if (github != null)
-        _Contact(
-          icon: Icons.code,
-          text: ResumeLinks.display(github),
-          url: github,
-        ),
+        _Contact(icon: Icons.code_rounded, text: 'GitHub', url: github, iconOnly: true),
       if (website != null)
-        _Contact(
-          icon: Icons.language,
-          text: ResumeLinks.display(website),
-          url: website,
-        ),
+        _Contact(icon: Icons.language, text: 'Website', url: website, iconOnly: true),
+      for (final link in info.socialLinks)
+        if (ResumeLinks.normalize(link.url) != null)
+          _Contact(
+            icon: _socialIcon(link.platform),
+            text: link.platform,
+            url: ResumeLinks.normalize(link.url),
+            iconOnly: true,
+          ),
     ];
 
     return SizedBox(
@@ -370,22 +382,33 @@ class _Contact extends StatelessWidget {
   final IconData icon;
   final String text;
   final String? url;
+  final bool iconOnly;
 
-  const _Contact({required this.icon, required this.text, this.url});
+  const _Contact({required this.icon, required this.text, this.url, this.iconOnly = false});
 
   @override
   Widget build(BuildContext context) {
-    final content = Row(
+    if (iconOnly && url != null) {
+      return Tooltip(
+        message: text,
+        child: InkWell(
+          onTap: () => _openUrl(context, url!),
+          borderRadius: BorderRadius.circular(6),
+          child: Padding(
+            padding: const EdgeInsets.all(3),
+            child: Icon(icon, size: 17, color: _linkColor),
+          ),
+        ),
+      );
+    }
+    return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon, size: 14, color: _muted),
         const SizedBox(width: 4),
-        Flexible(
-          child: _LinkText(text: text, url: url, size: 13),
-        ),
+        Flexible(child: _LinkText(text: text, url: url, size: 13)),
       ],
     );
-    return content;
   }
 }
 
@@ -499,24 +522,39 @@ class _Bullet extends StatelessWidget {
   );
 }
 
-class _LinkRow extends StatelessWidget {
-  final String label;
+Future<void> _openUrl(BuildContext context, String rawUrl) async {
+  final uri = ResumeLinks.toUri(rawUrl);
+  if (uri == null) return;
+  try {
+    final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!opened && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not open link')));
+    }
+  } catch (e) {
+    debugPrint('Could not launch $uri: $e');
+  }
+}
+
+class _IconLink extends StatelessWidget {
+  final IconData icon;
+  final String tooltip;
   final String url;
 
-  const _LinkRow({required this.label, required this.url});
+  const _IconLink({required this.icon, required this.tooltip, required this.url});
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(top: 4),
-    child: Wrap(
-      crossAxisAlignment: WrapCrossAlignment.center,
-      children: [
-        Text(
-          '$label: ',
-          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+    padding: const EdgeInsets.only(top: 4, right: 6),
+    child: Tooltip(
+      message: tooltip,
+      child: InkWell(
+        onTap: () => _openUrl(context, url),
+        borderRadius: BorderRadius.circular(6),
+        child: Padding(
+          padding: const EdgeInsets.all(4),
+          child: Icon(icon, size: 17, color: _linkColor),
         ),
-        _LinkText(text: ResumeLinks.display(url), url: url, size: 13),
-      ],
+      ),
     ),
   );
 }

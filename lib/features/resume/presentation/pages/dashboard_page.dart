@@ -11,8 +11,10 @@ import '../cubit/resumes_state.dart';
 import '../widgets/dashboard_widgets.dart';
 import '../widgets/empty_dashboard.dart';
 import '../widgets/entry_dialog.dart';
+import '../widgets/management_entry_card.dart';
 import '../widgets/resume_card.dart';
 import '../widgets/resume_loading.dart';
+import '../../../management/presentation/pages/management_page.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -20,26 +22,31 @@ class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: "Dashboard", icon: Icons.dashboard_customize_outlined ,
-      actions: [
-        GestureDetector(
-          onTap: ()=> context.read<ResumesCubit>().loadResumes(),
-          child: Container(
-            padding: EdgeInsets.all(8),
-            margin: EdgeInsets.only(right: 13),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.2),
-                width: 1,
+      appBar: CustomAppBar(
+        title: "Dashboard",
+        icon: Icons.dashboard_customize_outlined,
+        actions: [
+          GestureDetector(
+            onTap: () => context.read<ResumesCubit>().loadResumes(),
+            child: Container(
+              padding: EdgeInsets.all(8),
+              margin: EdgeInsets.only(right: 13),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  width: 1,
+                ),
+              ),
+              child: Icon(
+                Icons.refresh_outlined,
+                color: Colors.white,
+                size: 18,
               ),
             ),
-            child: Icon(Icons.refresh_outlined, color: Colors.white, size: 18),
           ),
-        ),
-      ],
-
+        ],
       ),
       body: BlocConsumer<ResumesCubit, ResumesState>(
         listener: (context, state) {
@@ -88,6 +95,9 @@ class DashboardPage extends StatelessWidget {
                             onCreate: () => _create(context),
                           ),
                           const SizedBox(height: 16),
+                          ManagementEntryCard(
+                            onTap: () => context.go("/management"),
+                          ),
                           const SizedBox(height: 16),
                           DashboardStats(resumes: resumes),
                           const SizedBox(height: 28),
@@ -101,10 +111,8 @@ class DashboardPage extends StatelessWidget {
                             onAction: resumes.length > 3
                                 ? () => _showAllResumes(context, resumes)
                                 : (resumes.any((r) => r.isPublic)
-                                      ? () => _openPublicResume(
-                                          context,
-                                          resumes,
-                                        )
+                                      ? () =>
+                                            _openPublicResume(context, resumes)
                                       : null),
                           ),
                           const SizedBox(height: 10),
@@ -115,13 +123,11 @@ class DashboardPage extends StatelessWidget {
                                 .take(3)
                                 .map(
                                   (resume) => Padding(
-                                    padding: const EdgeInsets.only(
-                                      bottom: 10,
-                                    ),
+                                    padding: const EdgeInsets.only(bottom: 10),
                                     child: ResumeCard(
                                       resume: resume,
                                       onTap: () => context.push(
-                                        '/resumes/editor',
+                                        '/resumes/preview',
                                         extra: resume,
                                       ),
                                       onPreview: () => context.push(
@@ -129,8 +135,7 @@ class DashboardPage extends StatelessWidget {
                                         extra: resume,
                                       ),
                                       onShare: () => _share(context, resume),
-                                      onRename: () =>
-                                          _rename(context, resume),
+                                      onRename: () => _rename(context, resume),
                                       onDuplicate: () async {
                                         final copy = await context
                                             .read<ResumesCubit>()
@@ -149,8 +154,7 @@ class DashboardPage extends StatelessWidget {
                                           );
                                         }
                                       },
-                                      onDelete: () =>
-                                          _delete(context, resume),
+                                      onDelete: () => _delete(context, resume),
                                     ),
                                   ),
                                 ),
@@ -160,7 +164,7 @@ class DashboardPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(height: 80,),
+                  SizedBox(height: 80),
                 ],
               );
             },
@@ -195,7 +199,7 @@ class DashboardPage extends StatelessWidget {
                 resume: resume,
                 onTap: () {
                   Navigator.pop(sheetContext);
-                  context.push('/resumes/editor', extra: resume);
+                  context.push('/resumes/preview', extra: resume);
                 },
                 onPreview: () {
                   Navigator.pop(sheetContext);

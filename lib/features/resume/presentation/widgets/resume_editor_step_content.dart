@@ -7,6 +7,7 @@ import '../../domain/entities/experience.dart';
 import '../../domain/entities/language.dart';
 import '../../domain/entities/project.dart';
 import '../../domain/entities/skill_group.dart';
+import '../../domain/entities/resume_social_link.dart';
 import '../cubit/resume_editor_cubit.dart';
 import '../cubit/resume_editor_state.dart';
 import '../widgets/editor_finish_step.dart';
@@ -35,6 +36,8 @@ class ResumeEditorStepContent extends StatelessWidget {
   final TextEditingController githubController;
   final TextEditingController websiteController;
   final TextEditingController summaryController;
+  final List<ResumeSocialLink> socialLinks;
+  final ValueChanged<List<ResumeSocialLink>> onSocialLinksChanged;
 
   final VoidCallback onPersonalChanged;
 
@@ -55,6 +58,8 @@ class ResumeEditorStepContent extends StatelessWidget {
     required this.githubController,
     required this.websiteController,
     required this.summaryController,
+    required this.socialLinks,
+    required this.onSocialLinksChanged,
     required this.onPersonalChanged,
   });
 
@@ -89,14 +94,16 @@ class ResumeEditorStepContent extends StatelessWidget {
                 linkedin: linkedinController,
                 github: githubController,
                 website: websiteController,
+                socialLinks: socialLinks,
+                onSocialLinksChanged: onSocialLinksChanged,
                 onChanged: onPersonalChanged,
               ),
             );
           case 2:
             return EditorStepWrapper(
-              title: 'Professional Summary',
+              title: 'Professional Summary (Optional)',
               subtitle:
-                  'A short introduction that makes your profile easy to understand.',
+                  'Add a short introduction if it helps explain your professional profile. You can skip this step.',
               child: ResumeSummaryStep(controller: summaryController),
             );
           case 3:
@@ -127,9 +134,9 @@ class ResumeEditorStepContent extends StatelessWidget {
   Widget _experience(BuildContext context, ResumeEditorState state) {
     final resume = state.resume;
     return EditorStepWrapper(
-      title: 'Experience',
+      title: 'Experience (Optional)',
       subtitle:
-          'Add your most relevant roles. Focus on what you achieved, not only what you did.',
+          'Add relevant roles if you have them. Students and career changers can skip this step.',
       child: EditorListSection<Experience>(
         items: resume.experience,
         emptyMessage: 'No experience added yet',
@@ -166,9 +173,9 @@ class ResumeEditorStepContent extends StatelessWidget {
   Widget _education(BuildContext context, ResumeEditorState state) {
     final resume = state.resume;
     return EditorStepWrapper(
-      title: 'Education',
+      title: 'Education (Optional)',
       subtitle:
-          'Add your degree or current studies. Keep the description short.',
+          'Add relevant education or current studies. You can skip this section if it does not apply.',
       child: EditorListSection<Education>(
         items: resume.education,
         emptyMessage: 'No education added yet',
@@ -207,9 +214,9 @@ class ResumeEditorStepContent extends StatelessWidget {
   Widget _projects(BuildContext context, ResumeEditorState state) {
     final resume = state.resume;
     return EditorStepWrapper(
-      title: 'Projects',
+      title: 'Projects / Selected Work (Optional)',
       subtitle:
-          'Showcase projects that prove your skills. Pick your strongest work.',
+          'Optional: add projects, campaigns, translations, research, or other work samples relevant to your profession.',
       child: EditorListSection<Project>(
         items: resume.projects,
         emptyMessage: 'No projects added yet',
@@ -248,8 +255,8 @@ class ResumeEditorStepContent extends StatelessWidget {
   Widget _skills(BuildContext context, ResumeEditorState state) {
     final resume = state.resume;
     return EditorStepWrapper(
-      title: 'Skills',
-      subtitle: 'Group skills by category so recruiters can scan them quickly.',
+      title: 'Skills (Optional)',
+      subtitle: 'Add relevant professional, technical, or interpersonal skills. You can skip this step for now.',
       child: EditorListSection<SkillGroup>(
         items: resume.skills,
         emptyMessage: 'No skills added yet',

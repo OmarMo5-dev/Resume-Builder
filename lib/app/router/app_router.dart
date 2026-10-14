@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:business_os/app/di/injection_container.dart';
 import 'package:business_os/app/router/app_page_transition.dart';
 import 'package:business_os/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:business_os/features/management/presentation/pages/management_page.dart';
+import 'package:business_os/features/resume/presentation/cubit/resumes_cubit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -83,6 +85,15 @@ GoRouter createAppRouter() {
             AppPageTransition.slide(
               child: const Root(initialIndex: 0),
             ),
+      ),
+
+      GoRoute(
+        path: '/management',
+        pageBuilder: (context, state) => AppPageTransition.slide(
+          child: BlocProvider(
+            create: (_)=> getIt<ResumesCubit>()..loadResumes(),
+              child: const ManagementPage()),
+        ),
       ),
 
       GoRoute(

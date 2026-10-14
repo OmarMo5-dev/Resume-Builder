@@ -475,10 +475,10 @@ class DashboardTipCard extends StatelessWidget {
     final amber = isDark ? const Color(0xFFFFC94D) : const Color(0xFF9A6700);
 
     final text = resume == null
-        ? 'Start with your strongest experience and projects. You can always refine the resume later.'
+        ? 'Start with the experience, education, and skills that best represent your profession. You can refine the CV later.'
         : resume!.isDraft
         ? 'Your latest resume is still a draft. Finish the key sections before sharing it.'
-        : 'Keep your resume fresh by adding new projects, courses, and experience as you grow.';
+        : 'Keep your CV up to date with relevant experience, education, skills, and certifications.';
 
     return Container(
       padding: const EdgeInsets.all(16),

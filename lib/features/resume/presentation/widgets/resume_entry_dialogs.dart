@@ -59,7 +59,7 @@ Future<Education?> showEducationEditor(
         initial: item?.degree ?? '',
         capitalization: TextCapitalization.words,
         required: true,
-        hintText: 'e.g. B.Sc. Computer Engineering',
+        hintText: 'e.g. Bachelor of Commerce, B.A. Translation, B.Sc. Medicine',
       ),
       EntryField(
         'location',
@@ -121,7 +121,7 @@ Future<Experience?> showExperienceEditor(
         initial: item?.position ?? '',
         capitalization: TextCapitalization.words,
         required: true,
-        hintText: 'e.g. Flutter Developer Intern',
+        hintText: 'e.g. Translator, Accountant, Teacher, Marketing Specialist',
       ),
       EntryField(
         'location',
@@ -136,7 +136,7 @@ Future<Experience?> showExperienceEditor(
         'Responsibilities & achievements',
         initial: item?.description.join('\n') ?? '',
         multiline: true,
-        hintText: 'Built X...\nImproved Y...\nReduced Z...',
+        hintText: 'Describe responsibilities, achievements, or measurable results, one point per line.',
       ),
     ],
     currentLabel: 'I currently work here',
@@ -165,23 +165,23 @@ Future<Project?> showProjectEditor(
 }) async {
   final result = await showEntryDialog(
     context,
-    title: item == null ? 'Add project' : 'Edit project',
-    subtitle: 'Show what you built and why it is worth mentioning.',
+    title: item == null ? 'Add selected work' : 'Edit selected work',
+    subtitle: 'Optionally describe a project, campaign, translation, research item, or other relevant work sample.',
     fields: [
       EntryField(
         'name',
-        'Project name',
+        'Work sample / project title',
         initial: item?.name ?? '',
         capitalization: TextCapitalization.words,
         required: true,
-        hintText: 'e.g. CV Builder',
+        hintText: 'e.g. Translation Portfolio, Marketing Campaign, Research Paper',
       ),
       EntryField(
         'role',
         'Your role',
         initial: item?.role ?? '',
         capitalization: TextCapitalization.words,
-        hintText: 'e.g. Flutter Developer',
+        hintText: 'e.g. Translator, Marketing Specialist, Researcher',
       ),
       EntryField(
         'description',
@@ -192,20 +192,20 @@ Future<Project?> showProjectEditor(
       ),
       EntryField(
         'tech',
-        'Technologies',
+        'Tools / Methods (optional)',
         initial: item?.technologies.join(', ') ?? '',
         multiline: true,
-        hintText: 'Flutter, Firebase, Clean Architecture',
+        hintText: 'Tools, methods, platforms, or techniques (optional)',
       ),
       EntryField(
         'github',
-        'GitHub URL',
+        'GitHub URL (optional)',
         initial: item?.githubUrl ?? '',
         keyboard: TextInputType.url,
       ),
       EntryField(
         'live',
-        'Live demo URL',
+        'Work sample URL (optional)',
         initial: item?.liveUrl ?? '',
         keyboard: TextInputType.url,
       ),
@@ -234,7 +234,7 @@ Future<SkillGroup?> showSkillEditor(
   final result = await showEntryDialog(
     context,
     title: item == null ? 'Add skills' : 'Edit skills',
-    subtitle: 'Group related skills so recruiters can scan them quickly.',
+    subtitle: 'Group relevant professional, technical, or interpersonal skills so they are easy to scan.',
     fields: [
       EntryField(
         'category',
@@ -242,7 +242,7 @@ Future<SkillGroup?> showSkillEditor(
         initial: item?.category ?? '',
         capitalization: TextCapitalization.words,
         required: true,
-        hintText: 'e.g. Programming',
+        hintText: 'e.g. Communication, Languages, Technical Skills',
       ),
       EntryField(
         'items',
@@ -250,7 +250,7 @@ Future<SkillGroup?> showSkillEditor(
         initial: item?.items.join(', ') ?? '',
         multiline: true,
         required: true,
-        hintText: 'Dart, Flutter, Firebase, Git',
+        hintText: 'Communication, Excel, Arabic-English Translation, Project Planning',
       ),
     ],
   );
