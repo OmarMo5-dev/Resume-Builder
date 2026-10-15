@@ -166,147 +166,167 @@ class ProfileFromState extends State<ProfileFrom> {
             children: [
               ProfileHeader(initial: initial, profile: profile, colors: colors),
               const SizedBox(height: 28),
-              _SectionLabel(title: 'PERSONAL INFORMATION'),
-              const SizedBox(height: 8),
-              _SectionCard(
-                children: [
-                  _field(
-                    controller: _nameController,
-                    label: 'Full name',
-                    icon: Icons.person_outline_rounded,
-                    action: TextInputAction.next,
-                    capitalization: TextCapitalization.words,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Please enter your name';
-                      }
-                      if (value.trim().length < 2) return 'Name is too short';
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 14),
-                  TextFormField(
-                    initialValue: profile.email,
-                    enabled: false,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      prefixIcon: Icon(Icons.mail_outline_rounded),
-                      helperText: 'Email is managed by your account provider.',
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  _field(
-                    controller: _phoneController,
-                    label: 'Phone',
-                    icon: Icons.phone_outlined,
-                    keyboardType: TextInputType.phone,
-                    action: TextInputAction.next,
-                  ),
-                  const SizedBox(height: 14),
-                  _field(
-                    controller: _locationController,
-                    label: 'Location',
-                    icon: Icons.location_on_outlined,
-                    action: TextInputAction.next,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              _SectionLabel(title: 'PROFESSIONAL LINKS'),
-              const SizedBox(height: 8),
-              _SectionCard(
-                children: [
-                  _field(
-                    controller: _linkedinController,
-                    label: 'LinkedIn URL',
-                    hint: 'https://linkedin.com/in/username',
-                    icon: Icons.business_center_outlined,
-                    keyboardType: TextInputType.url,
-                    action: TextInputAction.next,
-                    validator: (v) => _urlValidator(v, 'LinkedIn'),
-                  ),
-                  const SizedBox(height: 14),
-                  _field(
-                    controller: _githubController,
-                    label: 'GitHub URL',
-                    hint: 'https://github.com/username',
-                    icon: Icons.code_rounded,
-                    keyboardType: TextInputType.url,
-                    action: TextInputAction.next,
-                    validator: (v) => _urlValidator(v, 'GitHub'),
-                  ),
-                  const SizedBox(height: 14),
-                  _field(
-                    controller: _websiteController,
-                    label: 'Personal website',
-                    hint: 'https://example.com',
-                    icon: Icons.language_rounded,
-                    keyboardType: TextInputType.url,
-                    action: TextInputAction.done,
-                    validator: (v) => _urlValidator(v, 'website'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              _SectionLabel(title: 'RESUME DEFAULTS'),
-              const SizedBox(height: 8),
-              _SectionCard(
-                children: [
-                  _field(
-                    controller: _resumeTitleController,
-                    label: 'Default resume title',
-                    hint: 'My Resume',
-                    icon: Icons.description_outlined,
-                    action: TextInputAction.next,
-                  ),
-                  const SizedBox(height: 16),
-                  DropdownButtonFormField<String>(
-                    initialValue: _templateId,
-                    decoration: const InputDecoration(
-                      labelText: 'Default template',
-                      prefixIcon: Icon(Icons.auto_awesome_outlined),
-                    ),
-                    items: const [
-                      DropdownMenuItem(
-                        value: 'classic_01',
-                        child: Text('Classic'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'modern_01',
-                        child: Text('Modern'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'minimal_01',
-                        child: Text('Minimal'),
-                      ),
-                    ],
-                    onChanged: (value) {
-                      if (value != null) setState(() => _templateId = value);
-                    },
-                  ),
-                ],
-              ),
+
+              /// =================== ***** ===============
+              // _SectionLabel(title: 'PERSONAL INFORMATION'),
+              // const SizedBox(height: 8),
+              // _SectionCard(
+              //   children: [
+              //     _field(
+              //       controller: _nameController,
+              //       label: 'Full name',
+              //       icon: Icons.person_outline_rounded,
+              //       action: TextInputAction.next,
+              //       capitalization: TextCapitalization.words,
+              //       validator: (value) {
+              //         if (value == null || value.trim().isEmpty) {
+              //           return 'Please enter your name';
+              //         }
+              //         if (value.trim().length < 2) return 'Name is too short';
+              //         return null;
+              //       },
+              //     ),
+              //     const SizedBox(height: 14),
+              //     TextFormField(
+              //       initialValue: profile.email,
+              //       enabled: false,
+              //       decoration: const InputDecoration(
+              //         labelText: 'Email',
+              //         prefixIcon: Icon(Icons.mail_outline_rounded),
+              //         helperText: 'Email is managed by your account provider.',
+              //       ),
+              //     ),
+              //     const SizedBox(height: 14),
+              //     _field(
+              //       controller: _phoneController,
+              //       label: 'Phone',
+              //       icon: Icons.phone_outlined,
+              //       keyboardType: TextInputType.phone,
+              //       action: TextInputAction.next,
+              //     ),
+              //     const SizedBox(height: 14),
+              //     _field(
+              //       controller: _locationController,
+              //       label: 'Location',
+              //       icon: Icons.location_on_outlined,
+              //       action: TextInputAction.next,
+              //     ),
+              //   ],
+              // ),
+              // const SizedBox(height: 24),
+              // _SectionLabel(title: 'PROFESSIONAL LINKS'),
+              // const SizedBox(height: 8),
+              // _SectionCard(
+              //   children: [
+              //     _field(
+              //       controller: _linkedinController,
+              //       label: 'LinkedIn URL',
+              //       hint: 'https://linkedin.com/in/username',
+              //       icon: Icons.business_center_outlined,
+              //       keyboardType: TextInputType.url,
+              //       action: TextInputAction.next,
+              //       validator: (v) => _urlValidator(v, 'LinkedIn'),
+              //     ),
+              //     const SizedBox(height: 14),
+              //     _field(
+              //       controller: _githubController,
+              //       label: 'GitHub URL',
+              //       hint: 'https://github.com/username',
+              //       icon: Icons.code_rounded,
+              //       keyboardType: TextInputType.url,
+              //       action: TextInputAction.next,
+              //       validator: (v) => _urlValidator(v, 'GitHub'),
+              //     ),
+              //     const SizedBox(height: 14),
+              //     _field(
+              //       controller: _websiteController,
+              //       label: 'Personal website',
+              //       hint: 'https://example.com',
+              //       icon: Icons.language_rounded,
+              //       keyboardType: TextInputType.url,
+              //       action: TextInputAction.done,
+              //       validator: (v) => _urlValidator(v, 'website'),
+              //     ),
+              //   ],
+              // ),
+              // const SizedBox(height: 24),
+              // _SectionLabel(title: 'RESUME DEFAULTS'),
+              // const SizedBox(height: 8),
+              // _SectionCard(
+              //   children: [
+              //     _field(
+              //       controller: _resumeTitleController,
+              //       label: 'Default resume title',
+              //       hint: 'My Resume',
+              //       icon: Icons.description_outlined,
+              //       action: TextInputAction.next,
+              //     ),
+              //     const SizedBox(height: 16),
+              //     DropdownButtonFormField<String>(
+              //       initialValue: _templateId,
+              //       decoration: const InputDecoration(
+              //         labelText: 'Default template',
+              //         prefixIcon: Icon(Icons.auto_awesome_outlined),
+              //       ),
+              //       items: const [
+              //         DropdownMenuItem(
+              //           value: 'classic_01',
+              //           child: Text('Classic'),
+              //         ),
+              //         DropdownMenuItem(
+              //           value: 'modern_01',
+              //           child: Text('Modern'),
+              //         ),
+              //         DropdownMenuItem(
+              //           value: 'minimal_01',
+              //           child: Text('Minimal'),
+              //         ),
+              //       ],
+              //       onChanged: (value) {
+              //         if (value != null) setState(() => _templateId = value);
+              //       },
+              //     ),
+              //   ],
+              // ),
+              /// =================== ***** ===============
+
               const SizedBox(height: 28),
               _SectionLabel(title: 'SESSION'),
               const SizedBox(height: 8),
               _SectionCard(
                 children: [
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: Icon(Icons.logout_rounded, color: colors.error),
-                    title: Text(
-                      'Sign out',
-                      style: TextStyle(
-                        color: colors.error,
-                        fontWeight: FontWeight.w700,
+                  GestureDetector(
+                    onTap: saving ? null : _confirmSignOut,
+                    child: Container(
+                      padding: EdgeInsets.all(6),
+                      decoration: BoxDecoration(),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                        Row(
+                          spacing: 10,
+                          children: [
+                            Icon(Icons.logout_rounded, color: colors.error),
+                            Column(
+                              children: [
+                                Text(
+                                      'Sign out',
+                                      style: TextStyle(
+                                        color: colors.error,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      Icon(
+                            Icons.chevron_right_rounded,
+                            color: colors.error,
+                          ),
+                        ],
                       ),
                     ),
-                    subtitle: const Text('Return to the login screen.'),
-                    trailing: Icon(
-                      Icons.chevron_right_rounded,
-                      color: colors.error,
-                    ),
-                    onTap: saving ? null : _confirmSignOut,
                   ),
                 ],
               ),
@@ -376,27 +396,27 @@ class _SectionCard extends StatelessWidget {
   }
 }
 
-TextFormField _field({
-  required TextEditingController controller,
-  required String label,
-  required IconData icon,
-  required TextInputAction action,
-  TextInputType? keyboardType,
-  TextCapitalization capitalization = TextCapitalization.none,
-  String? hint,
-  String? Function(String?)? validator,
-}) {
-  return TextFormField(
-    onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
-    controller: controller,
-    textInputAction: action,
-    keyboardType: keyboardType,
-    textCapitalization: capitalization,
-    validator: validator,
-    decoration: InputDecoration(
-      labelText: label,
-      hintText: hint,
-      prefixIcon: Icon(icon),
-    ),
-  );
-}
+// TextFormField _field({
+//   required TextEditingController controller,
+//   required String label,
+//   required IconData icon,
+//   required TextInputAction action,
+//   TextInputType? keyboardType,
+//   TextCapitalization capitalization = TextCapitalization.none,
+//   String? hint,
+//   String? Function(String?)? validator,
+// }) {
+//   return TextFormField(
+//     onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
+//     controller: controller,
+//     textInputAction: action,
+//     keyboardType: keyboardType,
+//     textCapitalization: capitalization,
+//     validator: validator,
+//     decoration: InputDecoration(
+//       labelText: label,
+//       hintText: hint,
+//       prefixIcon: Icon(icon),
+//     ),
+//   );
+// }

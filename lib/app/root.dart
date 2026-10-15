@@ -87,6 +87,7 @@ class _ProfileTab extends StatelessWidget {
       providers: [
         BlocProvider(create: (_) => getIt<ProfileCubit>()..load()),
         BlocProvider(create: (_) => getIt<AuthCubit>()),
+        // BlocProvider(create: (_) => getIt<ResumesCubit>()..loadResumes()),
       ],
       child: ProfilePage(),
     );

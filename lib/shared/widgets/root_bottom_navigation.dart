@@ -112,11 +112,7 @@ class RootBottomNavigation extends StatelessWidget {
                                 child: Icon(
                                   isSelected ? item.activeIcon : item.icon,
                                   size: 22,
-                                  color: isSelected
-                                      ? (isDark ? cs.onPrimary : Colors.white)
-                                      : (isDark
-                                            ? Colors.grey.shade500
-                                            : Colors.grey.shade500),
+                                  color: isSelected ? Colors.white : Colors.grey.shade500
                                 ),
                               ),
                             ),

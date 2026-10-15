@@ -53,7 +53,7 @@ class ManagementEntryCard extends StatelessWidget {
                   Text(
                     'Resume Management',
                     style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                   const SizedBox(height: 3),

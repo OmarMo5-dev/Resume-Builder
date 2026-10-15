@@ -14,7 +14,7 @@ import '../widgets/entry_dialog.dart';
 import '../widgets/management_entry_card.dart';
 import '../widgets/resume_card.dart';
 import '../widgets/resume_loading.dart';
-import '../../../management/presentation/pages/management_page.dart';
+
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -106,14 +106,14 @@ class DashboardPage extends StatelessWidget {
                             actionLabel: resumes.length > 3
                                 ? 'View all'
                                 : (resumes.any((r) => r.isPublic)
-                                      ? 'Public'
-                                      : null),
+                                ? 'Public'
+                                : null),
                             onAction: resumes.length > 3
                                 ? () => _showAllResumes(context, resumes)
                                 : (resumes.any((r) => r.isPublic)
-                                      ? () =>
-                                            _openPublicResume(context, resumes)
-                                      : null),
+                                ? () =>
+                                _openPublicResume(context, resumes)
+                                : null),
                           ),
                           const SizedBox(height: 10),
                           if (resumes.isEmpty)
@@ -122,20 +122,23 @@ class DashboardPage extends StatelessWidget {
                             ...resumes
                                 .take(3)
                                 .map(
-                                  (resume) => Padding(
+                                  (resume) =>
+                                  Padding(
                                     padding: const EdgeInsets.only(bottom: 10),
                                     child: ResumeCard(
                                       resume: resume,
-                                      onTap: () => context.push(
-                                        '/resumes/preview',
-                                        extra: resume,
-                                      ),
-                                      onPreview: () => context.push(
-                                        '/resumes/preview',
-                                        extra: resume,
-                                      ),
+                                      onTap: () =>
+                                          context.go(
+                                            '/resumes/preview',
+                                            extra: resume,
+                                          ),
+                                      onEdit: () =>
+                                          context.go(
+                                            '/resumes/editor',
+                                            extra: resume,
+                                          ),
                                       onShare: () => _share(context, resume),
-                                      onRename: () => _rename(context, resume),
+                                      // onRename: () => _rename(context, resume),
                                       onDuplicate: () async {
                                         final copy = await context
                                             .read<ResumesCubit>()
@@ -146,7 +149,7 @@ class DashboardPage extends StatelessWidget {
                                           ).showSnackBar(
                                             const SnackBar(
                                               behavior:
-                                                  SnackBarBehavior.floating,
+                                              SnackBarBehavior.floating,
                                               content: Text(
                                                 'Resume duplicated',
                                               ),
@@ -157,7 +160,7 @@ class DashboardPage extends StatelessWidget {
                                       onDelete: () => _delete(context, resume),
                                     ),
                                   ),
-                                ),
+                            ),
                           const SizedBox(height: 22),
                           DashboardTipCard(resume: latest),
                         ],
@@ -186,35 +189,40 @@ class DashboardPage extends StatelessWidget {
       context: context,
       showDragHandle: true,
       isScrollControlled: true,
-      builder: (sheetContext) => SafeArea(
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height * 0.78,
-          child: ListView.separated(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-            itemCount: resumes.length,
-            separatorBuilder: (_, _) => const SizedBox(height: 10),
-            itemBuilder: (_, index) {
-              final resume = resumes[index];
-              return ResumeCard(
-                resume: resume,
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  context.push('/resumes/preview', extra: resume);
+      builder: (sheetContext) =>
+          SafeArea(
+            child: SizedBox(
+              height: MediaQuery
+                  .of(context)
+                  .size
+                  .height * 0.78,
+              child: ListView.separated(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                itemCount: resumes.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 10),
+                itemBuilder: (_, index) {
+                  final resume = resumes[index];
+                  return ResumeCard(
+                    resume: resume,
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      context.push('/resumes/preview', extra: resume);
+                    },
+                    onEdit: () {
+                      Navigator.pop(sheetContext);
+                      context.push('/resumes/preview', extra: resume);
+                    },
+                    onShare: () => _share(context, resume),
+                    // onRename: () => _rename(context, resume),
+                    onDuplicate: () =>
+                        context.read<ResumesCubit>().duplicateResumeData(
+                            resume),
+                    onDelete: () => _delete(context, resume),
+                  );
                 },
-                onPreview: () {
-                  Navigator.pop(sheetContext);
-                  context.push('/resumes/preview', extra: resume);
-                },
-                onShare: () => _share(context, resume),
-                onRename: () => _rename(context, resume),
-                onDuplicate: () =>
-                    context.read<ResumesCubit>().duplicateResumeData(resume),
-                onDelete: () => _delete(context, resume),
-              );
-            },
+              ),
+            ),
           ),
-        ),
-      ),
     );
   }
 
@@ -252,47 +260,41 @@ class DashboardPage extends StatelessWidget {
   Future<void> _delete(BuildContext context, Resume resume) async {
     final ok = await showDialog<bool>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Delete Resume?'),
-        content: Text('Delete "${resume.title}" permanently?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Cancel'),
+      builder: (dialogContext) =>
+          AlertDialog(
+            title: const Text('Delete Resume?'),
+            content: Text('Delete "${resume.title}" permanently?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, false),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: Theme
+                      .of(context)
+                      .colorScheme
+                      .error,
+                ),
+                onPressed: () => Navigator.pop(dialogContext, true),
+                child: const Text('Delete'),
+              ),
+            ],
           ),
-          FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
     );
     if (ok == true && context.mounted) {
       await context.read<ResumesCubit>().deleteResumeById(resume.id);
-    }
-  }
-
-  Future<void> _rename(BuildContext context, Resume resume) async {
-    final result = await showEntryDialog(
-      context,
-      title: 'Rename Resume',
-      fields: [
-        EntryField(
-          'title',
-          'Resume title',
-          initial: resume.title,
-          capitalization: TextCapitalization.words,
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(
+        const SnackBar(
+          behavior:
+          SnackBarBehavior.floating,
+          content: Text(
+            'Resume deleted',
+          ),
         ),
-      ],
-    );
-    if (result == null || !context.mounted) return;
-    final title = result['title'].trim();
-    if (title.isEmpty) return;
-    await context.read<ResumesCubit>().updateResumeData(
-      resume.copyWith(title: title),
-    );
+      );
+    }
   }
 }

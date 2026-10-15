@@ -29,7 +29,10 @@ class EditorBottomBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         border: Border(
-          top: BorderSide(color: cs.outlineVariant.withValues( alpha : .2), width: .5),
+          top: BorderSide(
+            color: cs.outlineVariant.withValues(alpha: .2),
+            width: .5,
+          ),
         ),
       ),
       child: SafeArea(
@@ -46,7 +49,9 @@ class EditorBottomBar extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  side: BorderSide(color: cs.outlineVariant.withValues( alpha : .12))
+                  side: BorderSide(
+                    color: cs.outlineVariant.withValues(alpha: .12),
+                  ),
                 ),
                 child: const Icon(Icons.arrow_back_rounded, size: 19),
               ),
@@ -60,7 +65,9 @@ class EditorBottomBar extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
-                side: BorderSide(color: cs.outlineVariant.withValues( alpha : .12))
+                side: BorderSide(
+                  color: cs.outlineVariant.withValues(alpha: .12),
+                ),
               ),
               icon: const Icon(Icons.save_outlined, size: 20),
             ),
@@ -85,8 +92,15 @@ class EditorBottomBar extends StatelessWidget {
                   : FilledButton.icon(
                       onPressed: isSaving ? null : onNext,
                       style: _buttonStyle(),
-                      icon: const Icon(Icons.arrow_forward_rounded, size: 18),
-                      label: const Text('Next'),
+                      label: const Text(
+                        'Next',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      icon: const Icon(
+                        Icons.arrow_forward_rounded,
+                        size: 18,
+                        color: Colors.white,
+                      ),
                     ),
             ),
           ],

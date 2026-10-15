@@ -55,16 +55,25 @@ class _ResumePreviewPageState extends State<ResumePreviewPage> {
       appBar: CustomAppBar(
         title: 'Resume Preview',
         icon: Icons.arrow_back,
-        onTap: () => context.pop(),
+        onTap: () {
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            context.go("/resumes");
+          }
+        },
         actions: [
           IconButton(
             tooltip: 'Export PDF',
-            icon: const Icon(Icons.picture_as_pdf_outlined ,color: Colors.white),
+            icon: const Icon(
+              Icons.picture_as_pdf_outlined,
+              color: Colors.white,
+            ),
             onPressed: _busy ? null : () => _run(ResumePdfService.export),
           ),
           IconButton(
             tooltip: 'Share PDF',
-            icon: const Icon(Icons.ios_share, color: Colors.white , size: 18,),
+            icon: const Icon(Icons.ios_share, color: Colors.white, size: 18),
             onPressed: _busy ? null : () => _run(ResumePdfService.share),
           ),
         ],
@@ -140,8 +149,7 @@ class _ResumeSheet extends StatelessWidget {
             _Section(title: 'PROFESSIONAL EXPERIENCE', children: experience),
           if (projects.isNotEmpty)
             _Section(title: 'SELECTED WORK / PROJECTS', children: projects),
-          if (skills.isNotEmpty)
-            _Section(title: 'SKILLS', children: skills),
+          if (skills.isNotEmpty) _Section(title: 'SKILLS', children: skills),
           if (courses.isNotEmpty)
             _Section(title: 'COURSES & CERTIFICATIONS', children: courses),
           if (education.isNotEmpty)
@@ -207,8 +215,18 @@ class _ResumeSheet extends StatelessWidget {
             Wrap(
               spacing: 5,
               children: [
-                if (github != null) _IconLink(icon: Icons.code_rounded, tooltip: 'GitHub', url: github),
-                if (live != null) _IconLink(icon: Icons.open_in_new_rounded, tooltip: 'Work sample', url: live),
+                if (github != null)
+                  _IconLink(
+                    icon: Icons.code_rounded,
+                    tooltip: 'GitHub',
+                    url: github,
+                  ),
+                if (live != null)
+                  _IconLink(
+                    icon: Icons.open_in_new_rounded,
+                    tooltip: 'Work sample',
+                    url: live,
+                  ),
               ],
             ),
         ],
@@ -241,7 +259,14 @@ class _ResumeSheet extends StatelessWidget {
           if (date.isNotEmpty) _Line(date),
         ],
         bullets: lines,
-        extra: [if (url != null) _IconLink(icon: Icons.link_rounded, tooltip: 'Credential', url: url)],
+        extra: [
+          if (url != null)
+            _IconLink(
+              icon: Icons.link_rounded,
+              tooltip: 'Credential',
+              url: url,
+            ),
+        ],
       ),
     ];
   }
@@ -286,8 +311,10 @@ IconData _socialIcon(String platform) {
   if (value.contains('github')) return Icons.code_rounded;
   if (value.contains('linkedin')) return Icons.business_center_outlined;
   if (value.contains('research')) return Icons.science_outlined;
-  if (value.contains('behance') || value.contains('design')) return Icons.palette_outlined;
-  if (value.contains('youtube') || value.contains('video')) return Icons.play_circle_outline;
+  if (value.contains('behance') || value.contains('design'))
+    return Icons.palette_outlined;
+  if (value.contains('youtube') || value.contains('video'))
+    return Icons.play_circle_outline;
   return Icons.link_rounded;
 }
 
@@ -324,11 +351,26 @@ class _Header extends StatelessWidget {
       if (location.isNotEmpty)
         _Contact(icon: Icons.place_outlined, text: location),
       if (linkedin != null)
-        _Contact(icon: Icons.business_center_outlined, text: 'LinkedIn', url: linkedin, iconOnly: true),
+        _Contact(
+          icon: Icons.business_center_outlined,
+          text: 'LinkedIn',
+          url: linkedin,
+          iconOnly: true,
+        ),
       if (github != null)
-        _Contact(icon: Icons.code_rounded, text: 'GitHub', url: github, iconOnly: true),
+        _Contact(
+          icon: Icons.code_rounded,
+          text: 'GitHub',
+          url: github,
+          iconOnly: true,
+        ),
       if (website != null)
-        _Contact(icon: Icons.language, text: 'Website', url: website, iconOnly: true),
+        _Contact(
+          icon: Icons.language,
+          text: 'Website',
+          url: website,
+          iconOnly: true,
+        ),
       for (final link in info.socialLinks)
         if (ResumeLinks.normalize(link.url) != null)
           _Contact(
@@ -384,7 +426,12 @@ class _Contact extends StatelessWidget {
   final String? url;
   final bool iconOnly;
 
-  const _Contact({required this.icon, required this.text, this.url, this.iconOnly = false});
+  const _Contact({
+    required this.icon,
+    required this.text,
+    this.url,
+    this.iconOnly = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -406,7 +453,9 @@ class _Contact extends StatelessWidget {
       children: [
         Icon(icon, size: 14, color: _muted),
         const SizedBox(width: 4),
-        Flexible(child: _LinkText(text: text, url: url, size: 13)),
+        Flexible(
+          child: _LinkText(text: text, url: url, size: 13),
+        ),
       ],
     );
   }
@@ -528,7 +577,9 @@ Future<void> _openUrl(BuildContext context, String rawUrl) async {
   try {
     final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!opened && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not open link')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Could not open link')));
     }
   } catch (e) {
     debugPrint('Could not launch $uri: $e');
@@ -540,7 +591,11 @@ class _IconLink extends StatelessWidget {
   final String tooltip;
   final String url;
 
-  const _IconLink({required this.icon, required this.tooltip, required this.url});
+  const _IconLink({
+    required this.icon,
+    required this.tooltip,
+    required this.url,
+  });
 
   @override
   Widget build(BuildContext context) => Padding(

@@ -308,7 +308,13 @@ class _ResumeEditorViewState extends State<_ResumeEditorView> {
             appBar: CustomAppBar(
               title: "Resume Editor",
               icon: Icons.arrow_back,
-              onTap: () => context.pop(),
+              onTap: () {
+                if(context.canPop()){
+                  context.pop();
+                }else{
+                  context.go("/resumes");
+                }
+              },
                 actions: [
                   IconButton(
                     tooltip: 'Preview',

@@ -28,9 +28,6 @@ class DashboardWelcome extends StatelessWidget {
 
     final bg = isDark ? cs.surfaceContainerHigh : Colors.white;
 
-    final ctaLabel = resumeCount == 0
-        ? 'Create your first resume'
-        : 'New resume';
 
     return Container(
       width: double.infinity,
@@ -102,10 +99,15 @@ class DashboardWelcome extends StatelessWidget {
                   borderRadius: BorderRadius.circular(13),
                 ),
               ),
-              icon: const Icon(Icons.add_rounded, size: 20),
+              icon: const Icon(
+                Icons.add_rounded,
+                size: 20,
+                color: Colors.white,
+              ),
               label: Text(
-                ctaLabel,
-                style: const TextStyle(fontWeight: FontWeight.w700),
+                "Create your resume",
+                style:
+                const TextStyle(fontWeight: FontWeight.w700 , color: Colors.white),
               ),
             ),
           ),
@@ -115,17 +117,13 @@ class DashboardWelcome extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
 // Stats
-// ─────────────────────────────────────────────────────────────
 
 class DashboardStats extends StatelessWidget {
   final List<Resume> resumes;
 
-  /// When true, show skeleton placeholders instead of "0".
   final bool loading;
 
-  /// Called when a stat card is tapped. Receives the stat key.
   final ValueChanged<String>? onStatTap;
 
   const DashboardStats({
@@ -227,7 +225,6 @@ class _StatCard extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
     final bg = isDark ? cs.surfaceContainerHigh : Colors.white;
 
-    // UI: zero values read as "muted" so the eye prioritizes real numbers.
     final isZero = !loading && data.value == 0;
     final valueColor = isZero
         ? cs.onSurfaceVariant.withValues(alpha: 0.55)
@@ -236,95 +233,83 @@ class _StatCard extends StatelessWidget {
     return Semantics(
       button: onTap != null,
       label: '${data.label}: ${data.value}',
-      child: Material(
-        color: bg,
-        borderRadius: BorderRadius.circular(22),
-        child: InkWell(
-          onTap: onTap == null
-              ? null
-              : () {
-                  HapticFeedback.selectionClick();
-                  onTap!.call();
-                },
+      child: Container(
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: bg,
           borderRadius: BorderRadius.circular(22),
-          child: Container(
-            padding: const EdgeInsets.all(15),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(22),
-              border: Border.all(
-                color: cs.outlineVariant.withValues(
-                  alpha: isDark ? 0.14 : 0.06,
-                ),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.05),
-                  blurRadius: 14,
-                  offset: const Offset(0, 4),
-                  spreadRadius: -4,
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(
-                    color: cs.primary.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(11),
-                  ),
-                  child: Icon(data.icon, size: 19, color: cs.primary),
-                ),
-                const SizedBox(width: 11),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (loading)
-                        _SkeletonBar(width: 34, height: 18)
-                      else
-                        // UX: animate count-up, tabular figures to
-                        // prevent digit jitter during animation.
-                        TweenAnimationBuilder<int>(
-                          tween: IntTween(begin: 0, end: data.value),
-                          duration: const Duration(milliseconds: 420),
-                          curve: Curves.easeOutCubic,
-                          builder: (context, value, _) => Text(
-                            '$value',
-                            style: theme.textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.w800,
-                              height: 1,
-                              color: valueColor,
-                              fontFeatures: const [
-                                FontFeature.tabularFigures(),
-                              ],
-                            ),
-                          ),
-                        ),
-                      const SizedBox(height: 5),
-                      Text(
-                        data.label,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: cs.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                // UX: chevron only when the card is tappable.
-                if (onTap != null)
-                  Icon(
-                    Icons.chevron_right_rounded,
-                    size: 18,
-                    color: cs.onSurfaceVariant.withValues(alpha: 0.5),
-                  ),
-              ],
+          border: Border.all(
+            color: cs.outlineVariant.withValues(
+              alpha: isDark ? 0.14 : 0.06,
             ),
           ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.05),
+              blurRadius: 6,
+              offset: const Offset(0, 4),
+              spreadRadius: -4,
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: cs.primary.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(11),
+              ),
+              child: Icon(data.icon, size: 19, color: cs.primary),
+            ),
+            const SizedBox(width: 11),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (loading)
+                    _SkeletonBar(width: 34, height: 18)
+                  else
+                    // UX: animate count-up, tabular figures to
+                    // prevent digit jitter during animation.
+                    TweenAnimationBuilder<int>(
+                      tween: IntTween(begin: 0, end: data.value),
+                      duration: const Duration(milliseconds: 420),
+                      curve: Curves.easeOutCubic,
+                      builder: (context, value, _) => Text(
+                        '$value',
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w800,
+                          height: 1,
+                          color: valueColor,
+                          fontFeatures: const [
+                            FontFeature.tabularFigures(),
+                          ],
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 5),
+                  Text(
+                    data.label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: cs.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // UX: chevron only when the card is tappable.
+            if (onTap != null)
+              Icon(
+                Icons.chevron_right_rounded,
+                size: 18,
+                color: cs.onSurfaceVariant.withValues(alpha: 0.5),
+              ),
+          ],
         ),
       ),
     );

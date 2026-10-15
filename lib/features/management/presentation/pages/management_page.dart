@@ -226,11 +226,11 @@ class _ManagementPageState extends State<ManagementPage> {
                     child: ResumeCard(
                       resume: resume,
                       onTap: () =>
-                          context.push('/resumes/preview', extra: resume),
-                      onPreview: () =>
-                          context.push('/resumes/preview', extra: resume),
+                          context.go('/resumes/preview', extra: resume),
+                      onEdit: () =>
+                          context.go('/resumes/editor', extra: resume),
                       onShare: () => _share(context, resume),
-                      onRename: () => _rename(context, resume),
+                      // onRename: () => _rename(context, resume),
                       onDuplicate: () => _duplicate(context, resume),
                       onDelete: () => _delete(context, resume),
                     ),
